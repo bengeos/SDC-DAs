@@ -26,6 +26,8 @@ class MLP(object):
         return X_Input
     def Save(self):
         Network = ET.Element("Neural_Network")
+        for x in self.Network_Shape:
+            ET.SubElement(Network,"Network_Shape").text = str(x)
         for x in self.Weights:
             layer = ET.SubElement(Network,"Layer")
             for y in x:
@@ -37,6 +39,9 @@ class MLP(object):
 
     def ReadXML(self):
         doc = ET.parse("MLP_WEIGHT.xml")
+        Shape = []
+        for shapes in doc.findall('Network_Shape'):
+            Shape.append(int(shapes.text))
         Nets = []
         for Layers in doc.findall('Layer'):
             Neur = []
@@ -47,7 +52,7 @@ class MLP(object):
                 Neur.append(Param)
             Nets.append(np.array(Neur))
         self.Weights = Nets
-
+        self.Network_Shape = Shape
     def Backward(self,x_Input,y_Output):
         _biases = [np.zeros(b.shape) for b in self.Biases]
         _weights = [np.zeros(w.shape) for w in self.Weights]
@@ -97,7 +102,7 @@ class MLP(object):
                 val = self.Evaluate(Test_Data)
                 x.append(j)
                 y.append(float(val)/n_test*100)
-                print "Loop {0}: {1} / {2} | {3}%".format(j,val , n_test,float(val)/n_test*100)
+                print "Loop {0}: {1} / {2} | {3}%".format(j+1,val , n_test,float(val)/n_test*100)
             else:
                 print "Loop {0} complete".format(j)
     def Evaluate(self, test_data):

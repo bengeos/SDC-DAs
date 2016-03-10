@@ -88,23 +88,18 @@ def Train_MLP():
     training_data = zip(training_inputs1, training_result1)
     test_data = zip(test_inputs,test_result)
 
-    net2.Evaluate_Network(training_data,10,1,2.0,test_data)
-
-
-
-
+    net2.Evaluate_Network(training_data,50,10,0.5,test_data)
 
 cv.namedWindow('Key Logger')
-cv.resizeWindow('Key Logger',500,500)
-Port = sp.Serial('COM6',9600)
+Port = sp.Serial('COM1',9600)
 tm.sleep(3)
 auto = 0
 while(1):
     img = cam.get_NewImage((50,50),0)
     #img = cv.imread('ben.jpg')
-    img_ = img.copy()
-    cv.imshow("BEN",cv.resize(img_,(700,500)))
-    k = cv.waitKey(100)
+    bb = cv.resize(img,(800,600))
+    cv.imshow("BEN",bb)
+    k = cv.waitKey(1)
     #when "P" pressed
     if(k == 48):
         print('STOP Car')
