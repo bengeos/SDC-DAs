@@ -493,8 +493,8 @@ class Ui_MainWindow(object):
         self.dial_mlp1_batch.setObjectName(_fromUtf8("dial_mlp1_batch"))
         self.dial_mlp1_loop = QtGui.QDial(self.mlp_status_box_2)
         self.dial_mlp1_loop.setGeometry(QtCore.QRect(200, 70, 41, 41))
-        self.dial_mlp1_loop.setMinimum(1)
-        self.dial_mlp1_loop.setMaximum(10000)
+        self.dial_mlp1_loop.setMinimum(50)
+        self.dial_mlp1_loop.setMaximum(9999)
         self.dial_mlp1_loop.setSingleStep(50)
         self.dial_mlp1_loop.setProperty("value", 30)
         self.dial_mlp1_loop.setObjectName(_fromUtf8("dial_mlp1_loop"))
@@ -1348,6 +1348,7 @@ class Ui_MainWindow(object):
         self.cmb_serial_port.clear()
         for port in self.get_SerialPorts():
             self.cmb_serial_port.addItem(port)
+        self.group_workarea.setEnabled(False)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
@@ -1451,7 +1452,15 @@ class Ui_MainWindow(object):
         self.btn_remove_layer.clicked.connect(self.remove_selected)
         self.btn_browse_haar.clicked.connect(self.Open_Haar_File_Dialog)
         self.btn_create_haar.clicked.connect(self.Save_Haar_FileDialog)
+        self.btn_init_sdc.clicked.connect(self.init_SDC)
+        self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
+        self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.changeValue)
 
+
+    def changeValue(self, value):
+        pos = self.dial_mlp1_loop.value()
+        self.txt_mlp1_loop_number.setText("Repitition Number: "+str(pos))
+        print pos
     def get_SerialPorts(self):
         Ports = list(serial.tools.list_ports.comports())
         PortName = []
@@ -1480,6 +1489,12 @@ class Ui_MainWindow(object):
         val, ok = QtGui.QInputDialog.getText(None, 'Add New Layer Size','Enter Layer Size:', 0)
         if (ok):
             self.lst_mlp_layers.addItem(val)
+    def init_SDC(self):
+        self.groupBox.setEnabled(False)
+        self.group_workarea.setEnabled(True)
+    def stop_SDC(self):
+        self.groupBox.setEnabled(True)
+        self.group_workarea.setEnabled(False)
 
 if __name__ == "__main__":
     import sys

@@ -13,7 +13,7 @@ class IPCamera(object):
     def Start(self):
         bytes=''
         while(True):
-            bytes+=self.Stream.read(10240)
+            bytes+=self.Stream.read(100240)
             a = bytes.find('\xff\xd8')
             b = bytes.find('\xff\xd9')
             if a!=-1 and b!=-1:
@@ -40,5 +40,5 @@ class IPCamera(object):
             writer = csv.writer(csvFile)
             writer.writerow(row)
 
-bb = IPCamera('http://192.168.173.159:8080/video')
+bb = IPCamera('http://192.168.137.248:8080/video')
 bb.Start()

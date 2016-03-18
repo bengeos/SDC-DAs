@@ -62,6 +62,6 @@ class NeuralNetwork(object):
     def Learn(self,csvFIle='TrainingData.csv'):
         self.LoadTrainigData(csvFIle)
         self.TrainMLP()
-bb = NeuralNetwork([2500,100,10],(50,50))
+bb = NeuralNetwork([2500,500,10],(50,50))
+bb.Learn()
 bb.MyNet.Save()
-#bb.MyNet.Save()
