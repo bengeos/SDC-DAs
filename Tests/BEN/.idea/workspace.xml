@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dacc89a5-f1da-45fb-b75d-fc4e8930bf5f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/PyQT_GUI/Test_PyQt.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/PyQT_GUI/Testss.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Neural Network/MLP_WEIGHT.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/Neural Network/TrainingData.csv" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Camera_Module/IPCamera.py" afterPath="$PROJECT_DIR$/Camera_Module/IPCamera.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Neural Network/IPCamera.py" afterPath="$PROJECT_DIR$/Neural Network/IPCamera.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Neural Network/NeuralNetwork.py" afterPath="$PROJECT_DIR$/Neural Network/NeuralNetwork.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PyQT_GUI/SDC_GUI.py" afterPath="$PROJECT_DIR$/PyQT_GUI/SDC_GUI.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Multi-Processing/Test1.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Multi-Processing/Test2.py" />
     </list>
     <ignored path="BEN.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -55,10 +48,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MLP_GUI.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="MLP_GUI.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/PyQT_GUI/MLP_GUI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.29928315">
+            <state vertical-scroll-proportion="0.0">
               <caret line="1576" column="21" selection-start-line="1576" selection-start-column="21" selection-end-line="1576" selection-end-column="21" />
               <folding />
             </state>
@@ -109,6 +102,40 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="MultiProcess.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Multi-Processing/MultiProcess.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="6" column="15" selection-start-line="6" selection-start-column="15" selection-end-line="6" selection-end-column="15" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Test1.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Multi-Processing/Test1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.15232974">
+              <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#47#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Test2.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Multi-Processing/Test2.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#52#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -145,6 +172,8 @@
         <option value="$PROJECT_DIR$/PyQT_GUI/SDC_GUI.py" />
         <option value="$PROJECT_DIR$/Neural Network/IPCamera.py" />
         <option value="$PROJECT_DIR$/Neural Network/NeuralNetwork.py" />
+        <option value="$PROJECT_DIR$/Multi-Processing/Test2.py" />
+        <option value="$PROJECT_DIR$/Multi-Processing/Test1.py" />
       </list>
     </option>
   </component>
@@ -179,6 +208,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -239,24 +270,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BEN" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="BEN" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MLP_Modules" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="RecentsManager">
@@ -269,7 +284,7 @@
       <recent name="C:\Users\BENGEOS-PC\Documents\SDC-DAs\Tests\BEN\MLP_Modules" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.SDC_GUI">
+  <component name="RunManager" selected="Python.Test1">
     <configuration default="false" name="SDC_GUI" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -283,40 +298,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="BEN" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PyQT_GUI/SDC_GUI.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Test_PyQt" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PyQT_GUI" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="BEN" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PyQT_GUI/Test_PyQt.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Testss" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/PyQT_GUI" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="BEN" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PyQT_GUI/Testss.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -351,6 +332,40 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="BEN" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Neural Network/NeuralNetwork.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Test1" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Multi-Processing" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="BEN" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Multi-Processing/Test1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Test2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Multi-Processing" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="BEN" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Multi-Processing/Test2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -479,18 +494,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.SDC_GUI" />
-      <item index="1" class="java.lang.String" itemvalue="Python.Test_PyQt" />
-      <item index="2" class="java.lang.String" itemvalue="Python.Testss" />
-      <item index="3" class="java.lang.String" itemvalue="Python.IPCamera (1)" />
-      <item index="4" class="java.lang.String" itemvalue="Python.NeuralNetwork" />
+      <item index="1" class="java.lang.String" itemvalue="Python.IPCamera (1)" />
+      <item index="2" class="java.lang.String" itemvalue="Python.NeuralNetwork" />
+      <item index="3" class="java.lang.String" itemvalue="Python.Test1" />
+      <item index="4" class="java.lang.String" itemvalue="Python.Test2" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.SDC_GUI" />
-        <item index="1" class="java.lang.String" itemvalue="Python.IPCamera (1)" />
-        <item index="2" class="java.lang.String" itemvalue="Python.NeuralNetwork" />
-        <item index="3" class="java.lang.String" itemvalue="Python.Testss" />
-        <item index="4" class="java.lang.String" itemvalue="Python.Test_PyQt" />
+        <item index="0" class="java.lang.String" itemvalue="Python.Test1" />
+        <item index="1" class="java.lang.String" itemvalue="Python.Test2" />
+        <item index="2" class="java.lang.String" itemvalue="Python.SDC_GUI" />
+        <item index="3" class="java.lang.String" itemvalue="Python.IPCamera (1)" />
+        <item index="4" class="java.lang.String" itemvalue="Python.NeuralNetwork" />
       </list>
     </recent_temporary>
   </component>
@@ -514,7 +529,6 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20295984" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32893" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22853369" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -527,6 +541,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32893" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -548,13 +563,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/MLP-GUI-Test/MLP.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MLP-GUI-Test/Test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -793,13 +801,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Multi-Processing/MultiProcess.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.19101124">
-          <caret line="6" column="15" selection-start-line="6" selection-start-column="15" selection-end-line="6" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/MLP-GUI-Test/Test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -908,9 +909,37 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/PyQT_GUI/MLP_GUI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.29928315">
+        <state vertical-scroll-proportion="0.0">
           <caret line="1576" column="21" selection-start-line="1576" selection-start-column="21" selection-end-line="1576" selection-end-column="21" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Multi-Processing/MultiProcess.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="6" column="15" selection-start-line="6" selection-start-column="15" selection-end-line="6" selection-end-column="15" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Multi-Processing/Test2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#52#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Multi-Processing/Test1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.15232974">
+          <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#47#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
