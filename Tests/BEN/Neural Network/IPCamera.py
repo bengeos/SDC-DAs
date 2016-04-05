@@ -54,5 +54,5 @@ class IPCamera(object):
             writer = csv.writer(csvFile)
             writer.writerow(row)
 
-bb = IPCamera('http://192.168.137.215:8080/video')
+bb = IPCamera('http://192.168.1.28:8080/video')
 bb.Start()

@@ -1,13 +1,12 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'SDC_GUI.ui'
-#
-# Created: Mon Mar 07 16:18:48 2016
-#      by: PyQt4 UI code generator 4.11.3
-#
-# WARNING! All changes made in this file will be lost!
 import serial.tools.list_ports
 from PyQt4 import QtCore, QtGui
+from multiprocessing import Process,Value,Array
+import time
+import sys
+import IP_Cam as cam
+
+Cam2 = cam.IP_Cam('http://192.168.43.1:8080/video')
+
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -127,6 +126,8 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.cmb_camera_size.setFont(font)
         self.cmb_camera_size.setObjectName(_fromUtf8("cmb_camera_size"))
+        self.cmb_camera_size.addItem(_fromUtf8(""))
+        self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
@@ -1368,7 +1369,9 @@ class Ui_MainWindow(object):
         self.label_7.setText(_translate("MainWindow", "Camera Size", None))
         self.cmb_camera_size.setItemText(0, _translate("MainWindow", "50 x 50", None))
         self.cmb_camera_size.setItemText(1, _translate("MainWindow", "100 x 100", None))
-        self.cmb_camera_size.setItemText(2, _translate("MainWindow", "1000 x 1000", None))
+        self.cmb_camera_size.setItemText(2, _translate("MainWindow", "800 x 500", None))
+        self.cmb_camera_size.setItemText(3, _translate("MainWindow", "1000 x 600", None))
+        self.cmb_camera_size.setItemText(4, _translate("MainWindow", "1000 x 800", None))
         self.label_8.setText(_translate("MainWindow", "Neuron File", None))
         self.label_9.setText(_translate("MainWindow", "Haar Cas. File", None))
         self.txt_haar_path.setText(_translate("MainWindow", "c:/My_Neural/Network/MLP.xml", None))
@@ -1445,7 +1448,9 @@ class Ui_MainWindow(object):
         self.label_41.setText(_translate("MainWindow", "Image Sampling Rate", None))
         self.commandLinkButton_4.setText(_translate("MainWindow", "Start", None))
         self.pushButton_24.setText(_translate("MainWindow", "Remove All Training", None))
+        self.init_with_gui()
 
+    def init_with_gui(self):
         self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
         self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
         self.btn_add_layer.clicked.connect(self.add_item)
@@ -1455,7 +1460,15 @@ class Ui_MainWindow(object):
         self.btn_init_sdc.clicked.connect(self.init_SDC)
         self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
         self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.changeValue)
+        self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
 
+    def Visualise_Camera_State(self):
+        if self.cbx_visualize_camera.isChecked():
+            print 'Visualize Camera'
+            Cam2.Start()
+        else:
+            print 'no camera'
+            Cam2.Stop()
 
     def changeValue(self, value):
         pos = self.dial_mlp1_loop.value()
@@ -1489,17 +1502,29 @@ class Ui_MainWindow(object):
         val, ok = QtGui.QInputDialog.getText(None, 'Add New Layer Size','Enter Layer Size:', 0)
         if (ok):
             self.lst_mlp_layers.addItem(val)
+    def getImageSize(self,str):
+        if(str == '50 x 50'):
+            return (50,50)
+        if(str == '100 x 100'):
+            return (100,100)
+        if(str == '800 x 500'):
+            return (800,500)
+        if(str == '1000 x 800'):
+            return (1000,800)
+        if(str == '1000 x 600'):
+            return (1000,600)
     def init_SDC(self):
         self.groupBox.setEnabled(False)
         self.group_workarea.setEnabled(True)
         print self.cmb_camera_source.currentText()
+        Cam2.Size = self.getImageSize(self.cmb_camera_size.currentText())
+
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)
+        Cam2.Stop()
 
-
-if __name__ == "__main__":
-    import sys
+def Init_GUI():
     app = QtGui.QApplication(sys.argv)
     MainWindow = QtGui.QMainWindow()
     ui = Ui_MainWindow()
@@ -1507,3 +1532,6 @@ if __name__ == "__main__":
     MainWindow.show()
     sys.exit(app.exec_())
 
+if __name__ == "__main__":
+    P1 = Process(target=Init_GUI)
+    P1.start()

@@ -63,5 +63,3 @@ class NeuralNetwork(object):
         self.LoadTrainigData(csvFIle)
         self.TrainMLP()
 bb = NeuralNetwork([2500,500,10],(50,50))
-bb.Learn()
-bb.MyNet.Save()
