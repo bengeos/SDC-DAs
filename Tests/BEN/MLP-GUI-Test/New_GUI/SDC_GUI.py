@@ -1548,11 +1548,22 @@ class Dialog(QtGui.QDialog):
         self.key = 0
     def keyPressEvent(self, event):
         self.key = event.key()
-        print SP.readline()
-        if(self.key == 79):
-            SP.write('F\r\n')
-        if(self.key == 80):
-            SP.write('B\r\n')
+        print event.key()
+        if(self.key == 87):
+            SP.write('W\r\n')
+        if(self.key == 68):
+            SP.write('D\r\n')
+        if(self.key == 65):
+            SP.write('A\r\n')
+        if(self.key == 83):
+            SP.write('S\r\n')
+        if(self.key == 81):
+            SP.write('E\r\n')
+        if(self.key == 69):
+            SP.write('Q\r\n')
+        if(self.key == 90):
+            SP.write('Z\r\n')
+
     def keyReleaseEvent(self, *args, **kwargs):
         self.key = 0
         print 'port cloed'
