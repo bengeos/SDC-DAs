@@ -4,10 +4,12 @@ from multiprocessing import Process,Value,Array
 import time
 import sys
 import IP_Cam as cam
+import serial as sp
 
 Cam2 = cam.IP_Cam('http://192.168.43.1:8080/video')
-
-
+SP = sp.Serial()
+def init_port(port_name):
+    SP.port = port_name
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -1462,10 +1464,24 @@ class Ui_MainWindow(object):
         self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.changeValue)
         self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
 
+
+    def keyPressEvent(self, event):
+        print 'hh'
+    def keyReleaseEvent(self, *args, **kwargs):
+        print 'fdfdf'
+    def mouseDoubleClickEvent(self, *args, **kwargs):
+        print 'Doyble clicked'+ str(args)
+    def eventFilter(self, QObject, QEvent):
+        print 'some even'
+
+
     def Visualise_Camera_State(self):
         if self.cbx_visualize_camera.isChecked():
             print 'Visualize Camera'
+            d = Dialog()
+            d.show()
             Cam2.Start()
+
         else:
             print 'no camera'
             Cam2.Stop()
@@ -1517,13 +1533,33 @@ class Ui_MainWindow(object):
         self.groupBox.setEnabled(False)
         self.group_workarea.setEnabled(True)
         print self.cmb_camera_source.currentText()
+        init_port(str(self.cmb_serial_port.currentText()))
+        SP.open()
+        print SP
         Cam2.Size = self.getImageSize(self.cmb_camera_size.currentText())
-
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)
         Cam2.Stop()
-
+class Dialog(QtGui.QDialog):
+    def __init__(self, parent = None):
+        super(Dialog,self).__init__(parent)
+        self.resize(300,200)
+        self.key = 0
+    def keyPressEvent(self, event):
+        self.key = event.key()
+        print SP.readline()
+        if(self.key == 79):
+            SP.write('F\r\n')
+        if(self.key == 80):
+            SP.write('B\r\n')
+    def keyReleaseEvent(self, *args, **kwargs):
+        self.key = 0
+        print 'port cloed'
+    def mouseDoubleClickEvent(self, *args, **kwargs):
+        print 'Doyble clicked'+ str(args)
+    def eventFilter(self, QObject, QEvent):
+        print 'some even'
 def Init_GUI():
     app = QtGui.QApplication(sys.argv)
     MainWindow = QtGui.QMainWindow()

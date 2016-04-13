@@ -3,11 +3,6 @@ class Dialog(QtGui.QDialog):
     def __init__(self, parent = None):
         super(Dialog,self).__init__(parent)
         self.resize(300,200)
-    def showEvent(self, event):
-        geom = self.frameGeometry()
-        geom.moveCenter(QtGui.QCursor.pos())
-        self.setGeometry(geom)
-        super(Dialog,self).showEvent(event)
     def keyPressEvent(self, event):
         print event.key()
     def keyReleaseEvent(self, *args, **kwargs):
