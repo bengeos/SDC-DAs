@@ -7,7 +7,6 @@ import csv
 class IP_Cam(object):
     def __init__(self,host):
         self.Host = host
-        self.Stream = urllib2.urlopen(self.Host)
         self.Folder = 'C:\Images'
         self.csvPath = 'C:\Users\BENGEOS-PC\Documents\SDC-DAs\Tests\BEN\Neural Network\TrainingData.csv'
         self.isRunning = True
@@ -16,8 +15,12 @@ class IP_Cam(object):
         self.Image = None
         self.Size = (500,800)
         self.Data = []
-
+    def setImageSize(self,image_size):
+        self.Size = image_size
+    def getImageSize(self):
+        return self.Size
     def Start(self):
+        self.Stream = urllib2.urlopen(self.Host)
         bytes=''
         self.isRunning = True
         while(self.isRunning):
@@ -31,7 +34,7 @@ class IP_Cam(object):
                 x = np.size(self.Frame)
                 if(x>= self.Size[0]*self.Size[1]):
                     try:
-                        self.Image = cv2.resize(self.Frame,self.Size)
+                        self.Image = cv2.resize(self.Frame,self.getImageSize())
                         cv2.imshow('IP Camera '+self.Host,self.Image)
                     finally:
                         x = 0

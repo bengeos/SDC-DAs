@@ -5,8 +5,9 @@ import time
 import sys
 import IP_Cam as cam
 import serial as sp
+import MLP as My_Net
 
-Cam2 = cam.IP_Cam('http://192.168.43.1:8080/video')
+#Cam2 = cam.IP_Cam('http://192.168.43.1:8080/video')
 SP = sp.Serial()
 def init_port(port_name):
     SP.port = port_name
@@ -1453,6 +1454,8 @@ class Ui_MainWindow(object):
         self.init_with_gui()
 
     def init_with_gui(self):
+        self.Camera = cam.IP_Cam("")
+        self.MLP = My_Net.MLP([0,0,10])
         self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
         self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
         self.btn_add_layer.clicked.connect(self.add_item)
@@ -1463,7 +1466,9 @@ class Ui_MainWindow(object):
         self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
         self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.changeValue)
         self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
-
+    def init_camera(self,host):
+        self.Camera = cam.IP_Cam(host)
+        self.Camera.Stop()
 
     def keyPressEvent(self, event):
         print 'hh'
@@ -1477,14 +1482,12 @@ class Ui_MainWindow(object):
 
     def Visualise_Camera_State(self):
         if self.cbx_visualize_camera.isChecked():
-            print 'Visualize Camera'
-            d = Dialog()
-            d.show()
-            Cam2.Start()
-
+            self.Camera.setImageSize(self.getImageSize(str(self.cmb_camera_size.currentText())))
+            print self.Camera.getImageSize()
+            self.Camera.Start();
         else:
             print 'no camera'
-            Cam2.Stop()
+            self.Camera.Stop()
 
     def changeValue(self, value):
         pos = self.dial_mlp1_loop.value()
@@ -1529,18 +1532,22 @@ class Ui_MainWindow(object):
             return (1000,800)
         if(str == '1000 x 600'):
             return (1000,600)
+        else:
+            return (50,50)
     def init_SDC(self):
         self.groupBox.setEnabled(False)
         self.group_workarea.setEnabled(True)
         print self.cmb_camera_source.currentText()
         init_port(str(self.cmb_serial_port.currentText()))
-        SP.open()
-        print SP
-        Cam2.Size = self.getImageSize(self.cmb_camera_size.currentText())
+        self.Camera.setImageSize(self.getImageSize(str(self.cmb_camera_size.currentText())))
+        self.lst_mlp_layers.selectAll()
+        for x in range(self.lst_mlp_layers.count()):
+            print str(self.lst_mlp_layers.cursor())
+        self.Camera = cam.IP_Cam(str(self.txte_camera_host.text()))
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)
-        Cam2.Stop()
+        self.Camera.Stop()
 class Dialog(QtGui.QDialog):
     def __init__(self, parent = None):
         super(Dialog,self).__init__(parent)
