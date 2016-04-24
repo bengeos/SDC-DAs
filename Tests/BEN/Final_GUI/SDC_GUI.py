@@ -5,12 +5,8 @@ import time
 import sys
 import IP_Cam as cam
 import serial as sp
-import MLP as My_Net
+import NeuralNetwork as MLP
 
-#Cam2 = cam.IP_Cam('http://192.168.43.1:8080/video')
-SP = sp.Serial()
-def init_port(port_name):
-    SP.port = port_name
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -1457,8 +1453,11 @@ class Ui_MainWindow(QtGui.QMainWindow):
 
     def init_with_gui(self):
         self.Camera = cam.IP_Cam("")
-        self.MLP_Net = []
-        self.MLP = My_Net.MLP([0,0,10])
+        self.MLP_Net_Layer = [2500]
+        self.ImageSize = (50,50)
+        self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
+        self.Driving_Mode = -1;
+        self.SerialPort = None
         self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
         self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
         self.btn_add_layer.clicked.connect(self.add_item)
@@ -1468,8 +1467,44 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_init_sdc.clicked.connect(self.init_SDC)
         self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
         self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.changeValue)
+        self.centralwidget.connect(self.dial_mlp1_batch, QtCore.SIGNAL('valueChanged(int)'),self.change_Batch_Value)
+        self.centralwidget.connect(self.dial_mlp1_batch, QtCore.SIGNAL('valueChanged(int)'),self.change_Batch_Value)
         self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
+        self.btn_free_mode_start.clicked.connect(self.StartFreeMode)
+        self.grp_free_mode.clicked.connect(self.StartFreeMode)
+        self.grp_self_driving.clicked.connect(self.StartSelfDrivingMode)
+        self.grp_training.clicked.connect(self.StartTrainningMode)
+        self.grp_free_mode.setChecked(True)
+        self.grp_training.setChecked(False)
+        self.grp_self_driving.setChecked(False)
 
+    def change_Batch_Value(self, value):
+        pos = self.dial_mlp1_batch.value()
+        self.txt_mlp1_batch_number.setText("Batch Number: "+str(pos))
+        self.MLP.setBatch_Number(int(pos))
+        print pos
+    def change_Batch_Value(self, value):
+        pos = self.dial_mlp1_batch.value()
+        self.txt_mlp1_batch_number.setText("Batch Number: "+str(pos))
+        self.MLP.setBatch_Number(int(pos))
+        print pos
+
+    def StartFreeMode(self):
+        self.grp_self_driving.setChecked(False)
+        self.grp_training.setChecked(False)
+        self.grp_free_mode.setChecked(True)
+        self.groupBox_15.setEnabled(False)
+        self.Driving_Mode = 0;
+    def StartTrainningMode(self):
+        self.grp_self_driving.setChecked(False)
+        self.grp_training.setChecked(True)
+        self.grp_free_mode.setChecked(False)
+        self.Driving_Mode = 1;
+    def StartSelfDrivingMode(self):
+        self.grp_self_driving.setChecked(True)
+        self.grp_training.setChecked(False)
+        self.grp_free_mode.setChecked(False)
+        self.Driving_Mode = 2;
     def init_camera(self,host):
         self.Camera = cam.IP_Cam(host)
         self.Camera.Stop()
@@ -1482,7 +1517,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         print 'Doyble clicked'+ str(args)
     def eventFilter(self, QObject, QEvent):
         print 'some even'
-
 
     def Visualise_Camera_State(self):
         if self.cbx_visualize_camera.isChecked():
@@ -1506,6 +1540,9 @@ class Ui_MainWindow(QtGui.QMainWindow):
     def Open_Training_File_Dialog(self):
         dir_ = QtGui.QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QtGui.QFileDialog.ShowDirsOnly)
         self.txt_training_folder_path.setText(dir_)
+        self.TrainigFolder = dir_
+        self.TrainigCSVFile = dir_+str('\TrainingCSV.csv')
+
     def Open_Neuron_File_Dialog(self):
         filename = QtGui.QFileDialog.getOpenFileName(None, 'Open File', '', 'Images (*.xml)',None, QtGui.QFileDialog.DontUseSheet)
         self.txt_neuron_path.setText(filename)
@@ -1539,68 +1576,37 @@ class Ui_MainWindow(QtGui.QMainWindow):
         else:
             return (50,50)
 
-    def keyPressEvent(self, event):
-         if type(event) == QtGui.QKeyEvent:
-             print event.key()
-             event.accept()
-         else:
-             event.ignore()
+    def SendSerial(self,char):
+        self.SerialPort.write(char)
     def init_SDC(self):
         self.groupBox.setEnabled(False)
         self.group_workarea.setEnabled(True)
         print self.cmb_camera_source.currentText()
-        init_port(str(self.cmb_serial_port.currentText()))
-        img_size = self.getImageSize(str(self.cmb_camera_size.currentText()))
-        self.Camera.setImageSize(img_size)
-        self.MLP_Net = []
-        self.MLP_Net.append(img_size[0]*img_size[1])
+        self.ImageSize = self.getImageSize(str(self.cmb_camera_size.currentText()))
+        self.Camera.setImageSize(self.ImageSize)
+        self.MLP_Net_Layer.append(self.ImageSize[0]*self.ImageSize[1])
         for x in range(self.lst_mlp_layers.count()):
-            self.MLP_Net.append(int(self.lst_mlp_layers.item(x).text()))
-        self.MLP_Net.append(10)
-        print str(self.MLP_Net)
+            self.MLP_Net_Layer.append(int(self.lst_mlp_layers.item(x).text()))
+        self.MLP_Net_Layer.append(10)
+        self.Camera.Host = 'http://192.168.43.1:8080/video'
+        print str(self.Camera.Host)
         self.Camera = cam.IP_Cam(str(self.txte_camera_host.text()))
+        self.SerialPort = sp.Serial(str(self.cmb_serial_port.currentText()))
+        print 'initializing serial port:'
+        print self.SerialPort
+        self.Driving_Mode = -1
+        self.grp_self_driving.setChecked(False)
+        self.grp_training.setChecked(False)
+        self.grp_free_mode.setChecked(False)
+
+        self.Camera.Folder = self.TrainigFolder
+        self.Camera.csvPath = self.TrainigCSVFile
+        print 'Image Size: '
+        print self.Camera.Size
+
+        self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)
-        self.Camera.Stop()
-class Dialog(QtGui.QDialog):
-    def __init__(self, parent = None):
-        super(Dialog,self).__init__(parent)
-        self.resize(300,200)
-        self.key = 0
-    def keyPressEvent(self, event):
-        self.key = event.key()
-        print event.key()
-        if(self.key == 87):
-            SP.write('W\r\n')
-        if(self.key == 68):
-            SP.write('D\r\n')
-        if(self.key == 65):
-            SP.write('A\r\n')
-        if(self.key == 83):
-            SP.write('S\r\n')
-        if(self.key == 81):
-            SP.write('E\r\n')
-        if(self.key == 69):
-            SP.write('Q\r\n')
-        if(self.key == 90):
-            SP.write('Z\r\n')
+        self.SerialPort.close()
 
-    def keyReleaseEvent(self, *args, **kwargs):
-        self.key = 0
-        print 'port cloed'
-    def mouseDoubleClickEvent(self, *args, **kwargs):
-        print 'Doyble clicked'+ str(args)
-    def eventFilter(self, QObject, QEvent):
-        print 'some even'
-def Init_GUI():
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
-
-if __name__ == "__main__":
-    P1 = Process(target=Init_GUI)
-    P1.start()

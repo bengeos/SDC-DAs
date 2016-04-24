@@ -6,11 +6,7 @@ import sys
 import IP_Cam as cam
 import serial as sp
 import MLP as My_Net
-
-#Cam2 = cam.IP_Cam('http://192.168.43.1:8080/video')
 SP = sp.Serial()
-def init_port(port_name):
-    SP.port = port_name
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -24,9 +20,7 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_MainWindow(QtGui.QMainWindow):
-    def __init__(self, parent=None):
-         QtGui.QWidget.__init__(self, parent)
+class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(1515, 942)
@@ -1474,16 +1468,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.Camera = cam.IP_Cam(host)
         self.Camera.Stop()
 
-    def keyPressEvent(self, event):
-        print 'hh'
-    def keyReleaseEvent(self, *args, **kwargs):
-        print 'fdfdf'
-    def mouseDoubleClickEvent(self, *args, **kwargs):
-        print 'Doyble clicked'+ str(args)
-    def eventFilter(self, QObject, QEvent):
-        print 'some even'
-
-
     def Visualise_Camera_State(self):
         if self.cbx_visualize_camera.isChecked():
             self.Camera.setImageSize(self.getImageSize(str(self.cmb_camera_size.currentText())))
@@ -1539,17 +1523,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
         else:
             return (50,50)
 
-    def keyPressEvent(self, event):
-         if type(event) == QtGui.QKeyEvent:
-             print event.key()
-             event.accept()
-         else:
-             event.ignore()
     def init_SDC(self):
         self.groupBox.setEnabled(False)
         self.group_workarea.setEnabled(True)
         print self.cmb_camera_source.currentText()
-        init_port(str(self.cmb_serial_port.currentText()))
         img_size = self.getImageSize(str(self.cmb_camera_size.currentText()))
         self.Camera.setImageSize(img_size)
         self.MLP_Net = []
@@ -1563,44 +1540,17 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)
         self.Camera.Stop()
-class Dialog(QtGui.QDialog):
-    def __init__(self, parent = None):
-        super(Dialog,self).__init__(parent)
-        self.resize(300,200)
-        self.key = 0
-    def keyPressEvent(self, event):
-        self.key = event.key()
-        print event.key()
-        if(self.key == 87):
-            SP.write('W\r\n')
-        if(self.key == 68):
-            SP.write('D\r\n')
-        if(self.key == 65):
-            SP.write('A\r\n')
-        if(self.key == 83):
-            SP.write('S\r\n')
-        if(self.key == 81):
-            SP.write('E\r\n')
-        if(self.key == 69):
-            SP.write('Q\r\n')
-        if(self.key == 90):
-            SP.write('Z\r\n')
 
-    def keyReleaseEvent(self, *args, **kwargs):
-        self.key = 0
-        print 'port cloed'
-    def mouseDoubleClickEvent(self, *args, **kwargs):
-        print 'Doyble clicked'+ str(args)
-    def eventFilter(self, QObject, QEvent):
-        print 'some even'
-def Init_GUI():
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+class Window(QtGui.QMainWindow):
+    def __init__(self):
+        super(Window, self).__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+    def keyPressEvent(self, ev):
+        print "key press"
 
 if __name__ == "__main__":
-    P1 = Process(target=Init_GUI)
-    P1.start()
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = Window()
+    MainWindow.show()
+    sys.exit(app.exec_())

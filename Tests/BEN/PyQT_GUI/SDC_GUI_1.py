@@ -1,21 +1,21 @@
-import serial.tools.list_ports
-from PyQt4 import QtCore, QtGui
-from multiprocessing import Process,Value,Array
-import time
-import sys
-import IP_Cam as cam
-import serial as sp
-import MLP as My_Net
+# -*- coding: utf-8 -*-
 
-#Cam2 = cam.IP_Cam('http://192.168.43.1:8080/video')
-SP = sp.Serial()
-def init_port(port_name):
-    SP.port = port_name
+# Form implementation generated from reading ui file 'SDC_GUI_1.ui'
+#
+# Created: Wed Apr 20 00:19:45 2016
+#      by: PyQt4 UI code generator 4.11.3
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt4 import QtCore, QtGui
+import sys
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
     def _fromUtf8(s):
         return s
+
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
@@ -24,9 +24,7 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
-class Ui_MainWindow(QtGui.QMainWindow):
-    def __init__(self, parent=None):
-         QtGui.QWidget.__init__(self, parent)
+class Ui_MainWindow(QtGui.QWidget):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(1515, 942)
@@ -131,8 +129,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         font.setPointSize(12)
         self.cmb_camera_size.setFont(font)
         self.cmb_camera_size.setObjectName(_fromUtf8("cmb_camera_size"))
-        self.cmb_camera_size.addItem(_fromUtf8(""))
-        self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
@@ -498,8 +494,8 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.dial_mlp1_batch.setObjectName(_fromUtf8("dial_mlp1_batch"))
         self.dial_mlp1_loop = QtGui.QDial(self.mlp_status_box_2)
         self.dial_mlp1_loop.setGeometry(QtCore.QRect(200, 70, 41, 41))
-        self.dial_mlp1_loop.setMinimum(50)
-        self.dial_mlp1_loop.setMaximum(9999)
+        self.dial_mlp1_loop.setMinimum(1)
+        self.dial_mlp1_loop.setMaximum(10000)
         self.dial_mlp1_loop.setSingleStep(50)
         self.dial_mlp1_loop.setProperty("value", 30)
         self.dial_mlp1_loop.setObjectName(_fromUtf8("dial_mlp1_loop"))
@@ -1343,17 +1339,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
-        self.Init()
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def Init(self):
-        self.cmb_serial_port.clear()
-        for port in self.get_SerialPorts():
-            self.cmb_serial_port.addItem(port)
-        self.group_workarea.setEnabled(False)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
@@ -1371,12 +1360,14 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.txt_training_folder_path.setText(_translate("MainWindow", "c:/My_Neural/Haar/Cascade.xml", None))
         self.btn_browse_neuron.setText(_translate("MainWindow", "Browse", None))
         self.btn_create_neurone.setText(_translate("MainWindow", "Create", None))
+        self.cmb_serial_port.setItemText(0, _translate("MainWindow", "COM1", None))
+        self.cmb_serial_port.setItemText(1, _translate("MainWindow", "COM2", None))
+        self.cmb_serial_port.setItemText(2, _translate("MainWindow", "COM3", None))
+        self.cmb_serial_port.setItemText(3, _translate("MainWindow", "COM4", None))
         self.label_7.setText(_translate("MainWindow", "Camera Size", None))
         self.cmb_camera_size.setItemText(0, _translate("MainWindow", "50 x 50", None))
         self.cmb_camera_size.setItemText(1, _translate("MainWindow", "100 x 100", None))
-        self.cmb_camera_size.setItemText(2, _translate("MainWindow", "800 x 500", None))
-        self.cmb_camera_size.setItemText(3, _translate("MainWindow", "1000 x 600", None))
-        self.cmb_camera_size.setItemText(4, _translate("MainWindow", "1000 x 800", None))
+        self.cmb_camera_size.setItemText(2, _translate("MainWindow", "1000 x 1000", None))
         self.label_8.setText(_translate("MainWindow", "Neuron File", None))
         self.label_9.setText(_translate("MainWindow", "Haar Cas. File", None))
         self.txt_haar_path.setText(_translate("MainWindow", "c:/My_Neural/Network/MLP.xml", None))
@@ -1453,154 +1444,20 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.label_41.setText(_translate("MainWindow", "Image Sampling Rate", None))
         self.commandLinkButton_4.setText(_translate("MainWindow", "Start", None))
         self.pushButton_24.setText(_translate("MainWindow", "Remove All Training", None))
-        self.init_with_gui()
-
-    def init_with_gui(self):
-        self.Camera = cam.IP_Cam("")
-        self.MLP_Net = []
-        self.MLP = My_Net.MLP([0,0,10])
-        self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
-        self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
-        self.btn_add_layer.clicked.connect(self.add_item)
-        self.btn_remove_layer.clicked.connect(self.remove_selected)
-        self.btn_browse_haar.clicked.connect(self.Open_Haar_File_Dialog)
-        self.btn_create_haar.clicked.connect(self.Save_Haar_FileDialog)
-        self.btn_init_sdc.clicked.connect(self.init_SDC)
-        self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
-        self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.changeValue)
-        self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
-
-    def init_camera(self,host):
-        self.Camera = cam.IP_Cam(host)
-        self.Camera.Stop()
-
-    def keyPressEvent(self, event):
-        print 'hh'
-    def keyReleaseEvent(self, *args, **kwargs):
-        print 'fdfdf'
-    def mouseDoubleClickEvent(self, *args, **kwargs):
-        print 'Doyble clicked'+ str(args)
-    def eventFilter(self, QObject, QEvent):
-        print 'some even'
 
 
-    def Visualise_Camera_State(self):
-        if self.cbx_visualize_camera.isChecked():
-            self.Camera.setImageSize(self.getImageSize(str(self.cmb_camera_size.currentText())))
-            print self.Camera.getImageSize()
-            self.Camera.Start();
-        else:
-            print 'no camera'
-            self.Camera.Stop()
+class MyMainWindow(QtGui.QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None):
+        super(MyMainWindow, self).__init__(parent)
+        self.setupUi(self)
+        # if you didn't subclass Ui_MainWindow simply do:
+        # Ui_MainWindow().setupUi(self)
 
-    def changeValue(self, value):
-        pos = self.dial_mlp1_loop.value()
-        self.txt_mlp1_loop_number.setText("Repitition Number: "+str(pos))
-        print pos
-    def get_SerialPorts(self):
-        Ports = list(serial.tools.list_ports.comports())
-        PortName = []
-        for port in Ports:
-            PortName.append(port[0])
-        return PortName
-    def Open_Training_File_Dialog(self):
-        dir_ = QtGui.QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QtGui.QFileDialog.ShowDirsOnly)
-        self.txt_training_folder_path.setText(dir_)
-    def Open_Neuron_File_Dialog(self):
-        filename = QtGui.QFileDialog.getOpenFileName(None, 'Open File', '', 'Images (*.xml)',None, QtGui.QFileDialog.DontUseSheet)
-        self.txt_neuron_path.setText(filename)
-    def Open_Haar_File_Dialog(self):
-        filename = QtGui.QFileDialog.getOpenFileName(None, 'Open File', '', 'Images (*.xml)',None, QtGui.QFileDialog.DontUseSheet)
-        self.txt_haar_path.setText(filename)
-    def Save_Neuron_FileDialog(self):
-        dir_ = QtGui.QFileDialog.getSaveFileName(None, "Save Neuron file as", "", ".xml")
-        self.txt_neuron_path.setText(dir_)
-    def Save_Haar_FileDialog(self):
-        dir_ = QtGui.QFileDialog.getSaveFileName(None, "Save Haar Cascade file as", "", ".xml")
-        self.txt_haar_path.setText(dir_)
-    def remove_selected(self):
-        for SelectedItem in self.lst_mlp_layers.selectedItems():
-            self.lst_mlp_layers.takeItem(self.lst_mlp_layers.row(SelectedItem))
-    def add_item(self):
-        val, ok = QtGui.QInputDialog.getText(None, 'Add New Layer Size','Enter Layer Size:', 0)
-        if (ok):
-            self.lst_mlp_layers.addItem(val)
-    def getImageSize(self,str):
-        if(str == '50 x 50'):
-            return (50,50)
-        if(str == '100 x 100'):
-            return (100,100)
-        if(str == '800 x 500'):
-            return (800,500)
-        if(str == '1000 x 800'):
-            return (1000,800)
-        if(str == '1000 x 600'):
-            return (1000,600)
-        else:
-            return (50,50)
+    def keyPressEvent(self, e):
+        print e.key()
 
-    def keyPressEvent(self, event):
-         if type(event) == QtGui.QKeyEvent:
-             print event.key()
-             event.accept()
-         else:
-             event.ignore()
-    def init_SDC(self):
-        self.groupBox.setEnabled(False)
-        self.group_workarea.setEnabled(True)
-        print self.cmb_camera_source.currentText()
-        init_port(str(self.cmb_serial_port.currentText()))
-        img_size = self.getImageSize(str(self.cmb_camera_size.currentText()))
-        self.Camera.setImageSize(img_size)
-        self.MLP_Net = []
-        self.MLP_Net.append(img_size[0]*img_size[1])
-        for x in range(self.lst_mlp_layers.count()):
-            self.MLP_Net.append(int(self.lst_mlp_layers.item(x).text()))
-        self.MLP_Net.append(10)
-        print str(self.MLP_Net)
-        self.Camera = cam.IP_Cam(str(self.txte_camera_host.text()))
-    def stop_SDC(self):
-        self.groupBox.setEnabled(True)
-        self.group_workarea.setEnabled(False)
-        self.Camera.Stop()
-class Dialog(QtGui.QDialog):
-    def __init__(self, parent = None):
-        super(Dialog,self).__init__(parent)
-        self.resize(300,200)
-        self.key = 0
-    def keyPressEvent(self, event):
-        self.key = event.key()
-        print event.key()
-        if(self.key == 87):
-            SP.write('W\r\n')
-        if(self.key == 68):
-            SP.write('D\r\n')
-        if(self.key == 65):
-            SP.write('A\r\n')
-        if(self.key == 83):
-            SP.write('S\r\n')
-        if(self.key == 81):
-            SP.write('E\r\n')
-        if(self.key == 69):
-            SP.write('Q\r\n')
-        if(self.key == 90):
-            SP.write('Z\r\n')
-
-    def keyReleaseEvent(self, *args, **kwargs):
-        self.key = 0
-        print 'port cloed'
-    def mouseDoubleClickEvent(self, *args, **kwargs):
-        print 'Doyble clicked'+ str(args)
-    def eventFilter(self, QObject, QEvent):
-        print 'some even'
-def Init_GUI():
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
-
-if __name__ == "__main__":
-    P1 = Process(target=Init_GUI)
-    P1.start()
+if __name__ == '__main__':
+    app = QtGui.QApplication([])
+    win = MyMainWindow()
+    win.show()
+    app.exec_()
