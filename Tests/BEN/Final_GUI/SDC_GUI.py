@@ -1458,6 +1458,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
         self.Driving_Mode = -1;
         self.SerialPort = None
+        self.NeuronFilePath = ''
         self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
         self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
         self.btn_add_layer.clicked.connect(self.add_item)
@@ -1465,10 +1466,15 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_browse_haar.clicked.connect(self.Open_Haar_File_Dialog)
         self.btn_create_haar.clicked.connect(self.Save_Haar_FileDialog)
         self.btn_init_sdc.clicked.connect(self.init_SDC)
+        self.btn_mlp1_load.clicked.connect(self.Load_Training_Images)
+        self.btn_mlp1_start.clicked.connect(self.Start_Training)
+        self.btn_mlp1_save.clicked.connect(self.Save_MLP)
+        self.btn_create_neurone.clicked.connect(self.Save_Neuron_FileDialog)
+
         self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
-        self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.changeValue)
+        self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.change_Loop_Value)
         self.centralwidget.connect(self.dial_mlp1_batch, QtCore.SIGNAL('valueChanged(int)'),self.change_Batch_Value)
-        self.centralwidget.connect(self.dial_mlp1_batch, QtCore.SIGNAL('valueChanged(int)'),self.change_Batch_Value)
+        self.centralwidget.connect(self.dial_mlp1_epsilon, QtCore.SIGNAL('valueChanged(int)'),self.change_Epsilon_Value)
         self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
         self.btn_free_mode_start.clicked.connect(self.StartFreeMode)
         self.grp_free_mode.clicked.connect(self.StartFreeMode)
@@ -1477,17 +1483,34 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.grp_free_mode.setChecked(True)
         self.grp_training.setChecked(False)
         self.grp_self_driving.setChecked(False)
+    def Save_MLP(self):
+        self.MLP.Save_To(self.NeuronFilePath)
+    def change_Loop_Value(self, value):
+        pos = self.dial_mlp1_loop.value()
+        self.txt_mlp1_loop_number.setText("Loop Number: "+str(pos/10))
+        self.MLP.Iteration = pos/10
+        print 'Set Looping Count: '+str(pos/10)
+    def change_Batch_Value(self, value):
+        pos = self.dial_mlp1_batch.value()
+        self.txt_mlp1_batch_number.setText("Batch No.: "+str(pos))
+        self.MLP.BatchTask = pos
+        print 'Set Batch Number: '+str(pos)
+    def change_Epsilon_Value(self, value):
+        pos = float(self.dial_mlp1_epsilon.value())/100
+        self.txt_mlp1_epsilon.setText("Epsilon: "+str(pos))
+        self.MLP.Epselom = pos
+        print 'Set Epsilom Value'+str(pos)
 
-    def change_Batch_Value(self, value):
-        pos = self.dial_mlp1_batch.value()
-        self.txt_mlp1_batch_number.setText("Batch Number: "+str(pos))
-        self.MLP.setBatch_Number(int(pos))
-        print pos
-    def change_Batch_Value(self, value):
-        pos = self.dial_mlp1_batch.value()
-        self.txt_mlp1_batch_number.setText("Batch Number: "+str(pos))
-        self.MLP.setBatch_Number(int(pos))
-        print pos
+    def Load_Training_Images(self):
+        self.MLP.LoadTrainigData(self.TrainigCSVFile)
+        self.txt_mlp1_training_images.setText("Training Images: "+str(self.MLP.Count))
+    def Start_Training(self):
+        if(self.MLP.Count > 0):
+            self.MLP.TrainMLP()
+            print 'The result is: '+str(self.MLP.MyNet.TrainningResult)
+            self.prg_mlp1_accuracy.setValue(self.MLP.MyNet.TrainningResult)
+        else:
+            print 'Nothing to learn from!'
 
     def StartFreeMode(self):
         self.grp_self_driving.setChecked(False)
@@ -1546,11 +1569,15 @@ class Ui_MainWindow(QtGui.QMainWindow):
     def Open_Neuron_File_Dialog(self):
         filename = QtGui.QFileDialog.getOpenFileName(None, 'Open File', '', 'Images (*.xml)',None, QtGui.QFileDialog.DontUseSheet)
         self.txt_neuron_path.setText(filename)
+        self.NeuronFilePath = filename
     def Open_Haar_File_Dialog(self):
         filename = QtGui.QFileDialog.getOpenFileName(None, 'Open File', '', 'Images (*.xml)',None, QtGui.QFileDialog.DontUseSheet)
         self.txt_haar_path.setText(filename)
     def Save_Neuron_FileDialog(self):
         dir_ = QtGui.QFileDialog.getSaveFileName(None, "Save Neuron file as", "", ".xml")
+        file = open(dir_,'w')
+        file.close()
+        self.NeuronFilePath = dir_
         self.txt_neuron_path.setText(dir_)
     def Save_Haar_FileDialog(self):
         dir_ = QtGui.QFileDialog.getSaveFileName(None, "Save Haar Cascade file as", "", ".xml")
@@ -1584,6 +1611,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         print self.cmb_camera_source.currentText()
         self.ImageSize = self.getImageSize(str(self.cmb_camera_size.currentText()))
         self.Camera.setImageSize(self.ImageSize)
+        self.MLP_Net_Layer = []
         self.MLP_Net_Layer.append(self.ImageSize[0]*self.ImageSize[1])
         for x in range(self.lst_mlp_layers.count()):
             self.MLP_Net_Layer.append(int(self.lst_mlp_layers.item(x).text()))
@@ -1603,8 +1631,11 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.Camera.csvPath = self.TrainigCSVFile
         print 'Image Size: '
         print self.Camera.Size
+        print self.MLP_Net_Layer
 
         self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
+        self.Camera.Size = self.ImageSize
+
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)

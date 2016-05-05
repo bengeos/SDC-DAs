@@ -47,6 +47,7 @@ class IP_Cam(object):
     def Stop(self):
         self.isRunning = False
     def Take(self,label):
+        print 'This is the label: '+str(label)
         self.Stream = urllib2.urlopen(self.Host)
         bytes=''
         self.isRunning = True
@@ -59,6 +60,7 @@ class IP_Cam(object):
                 jpg = bytes[a:b+2]
                 bytes= bytes[b+2:]
                 self.Frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
+                self.Frame = cv2.cvtColor(self.Frame,cv2.COLOR_BGR2GRAY)
                 x = np.size(self.Frame)
                 if(x>= self.Size[0]*self.Size[1]):
                     try:

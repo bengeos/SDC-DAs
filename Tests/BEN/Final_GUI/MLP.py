@@ -8,6 +8,8 @@ def sigmoid_der(z):
     return sigmoid(z)*(1-sigmoid(z))
 class MLP(object):
     def __init__(self,Network_Shape):
+        print 'Network Shape:'
+        print Network_Shape
         self.Layer_Len = len(Network_Shape)
         self.Network_Shape = Network_Shape
         self.Biases = self.init_Biases()
@@ -37,6 +39,29 @@ class MLP(object):
                     ET.SubElement(Neurone,"Weight").text = str(z)
         tree = ET.ElementTree(Network)
         tree.write("MLP_WEIGHT.xml","UTF-8")
+    def Save_To(self,path):
+        Network = ET.Element("Neural_Network")
+        for x in self.Weights:
+            layer = ET.SubElement(Network,"Layer")
+            for y in x:
+                Neurone = ET.SubElement(layer,"Neurone")
+                for z in y:
+                    ET.SubElement(Neurone,"Weight").text = str(z)
+        tree = ET.ElementTree(Network)
+        print 'Save file to: '+str(path)
+        tree.write(path,"UTF-8")
+    def Load_From(self,path):
+        doc = ET.parse(path)
+        Nets = []
+        for Layers in doc.findall('Layer'):
+            Neur = []
+            for Neurones in Layers.findall('Neurone'):
+                Param = []
+                for Weights in Neurones.findall('Weight'):
+                    Param.append(float(Weights.text))
+                Neur.append(Param)
+            Nets.append(np.array(Neur))
+        self.Weights = Nets
 
     def ReadXML(self):
         doc = ET.parse("MLP_WEIGHT.xml")
@@ -105,6 +130,7 @@ class MLP(object):
                 y.append(float(val)/n_test*100)
                 print "Loop {0}: {1} / {2} | {3}%".format(j,val , n_test,float(val)/n_test*100)
                 self.TrainningProgress = int(j)/loop*100
+                print float(val)/n_test*100
                 self.TrainningResult = int(val)/n_test*100
             else:
                 print "Loop {0} complete".format(j)

@@ -12,6 +12,7 @@ class NeuralNetwork(object):
         self.Iteration = 50
         self.BatchTask = 10
         self.Epselom = 0.5
+        self.Count = 0
         if((ImageSize[0]*ImageSize[1]) != NetLayers[0]):
             print '>> Image Size and Input layer should Match'
             exit()
@@ -29,8 +30,12 @@ class NeuralNetwork(object):
         vec[val] = 1.0
         return vec
     def LoadTrainigData(self,filePath):
+        print 'Loading Trainig Files'
         print filePath
+        self.TrainingData = []
+        self.TrainingResult = []
         with open(filePath) as csvFile:
+            self.Count = 0
             spread = csv.reader(csvFile)
             for row in spread:
                 if(int(row[2]) == self.Size[0] and int(row[3]) == self.Size[1]):
@@ -38,9 +43,13 @@ class NeuralNetwork(object):
                     img = cv.cvtColor(img,cv.COLOR_BGR2GRAY)
                     img_shape = np.shape(img)
                     arrayData = img.reshape(-1,img_shape[0]*img_shape[1]).astype(np.float32)
+                    print 'Loading Data:'
+                    print arrayData
                     self.TrainingData.append(arrayData)
                     self.TrainingResult.append(int(row[1]))
+                    self.Count = self.Count + 1
     def ResetData(self):
+        self.Count = 0
         for xx in range(len(self.TrainingData)):
             self.TrainingData.pop()
         for xx in range(len(self.TrainingResult)):
@@ -71,4 +80,8 @@ class NeuralNetwork(object):
     def Learn(self,csvFIle='TrainingData.csv'):
         self.LoadTrainigData(csvFIle)
         self.TrainMLP()
+    def Save_To(self,path):
+        self.MyNet.Save_To(path)
+    def Load_From(self,path):
+        self.MyNet.Load_From(path)
 bb = NeuralNetwork([2500,500,10],(50,50))

@@ -7,8 +7,6 @@ class Window(QtGui.QMainWindow):
         self.ui = My_GUI.Ui_MainWindow()
         self.ui.setupUi(self)
         self.SentPrev = 0
-
-
     def keyPressEvent(self, ev):
         if(self.ui.Driving_Mode > -1):
             if(ev.key() == 16777235 and self.SentPrev != 1):
