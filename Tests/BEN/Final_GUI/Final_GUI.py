@@ -1,6 +1,7 @@
 from PyQt4 import QtCore, QtGui
 import SDC_GUI as My_GUI
 import sys
+
 class Window(QtGui.QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
