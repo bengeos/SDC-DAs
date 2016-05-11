@@ -62,6 +62,8 @@ class MLP(object):
                 Neur.append(Param)
             Nets.append(np.array(Neur))
         self.Weights = Nets
+        print "Weight shape"
+        print np.shape(self.Weights)
 
     def ReadXML(self):
         doc = ET.parse("MLP_WEIGHT.xml")
@@ -131,7 +133,7 @@ class MLP(object):
                 print "Loop {0}: {1} / {2} | {3}%".format(j,val , n_test,float(val)/n_test*100)
                 self.TrainningProgress = int(j)/loop*100
                 print float(val)/n_test*100
-                self.TrainningResult = int(val)/n_test*100
+                self.TrainningResult = float(val)/n_test*100
             else:
                 print "Loop {0} complete".format(j)
         self.IsTraining = False
@@ -139,6 +141,7 @@ class MLP(object):
         test_results = [(np.argmax(self.Forward(x)), y)for (x, y) in test_data]
         return sum(int(x == y) for (x, y) in test_results)
     def Evaluate_Data(self, test_data):
+        print np.shape(test_data)
         test_results = [(np.argmax(self.Forward(x)), y)for (x, y) in test_data]
         z = []
         for (x,y) in test_results:

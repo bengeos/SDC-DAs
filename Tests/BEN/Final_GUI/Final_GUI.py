@@ -19,7 +19,7 @@ class Window(QtGui.QMainWindow):
             if(ev.key() == 16777237 and self.SentPrev != 2):
                 print 'Down'
                 self.SentPrev = 2
-                self.ui.SendSerial('S')
+                self.ui.SendSerial('Z')
                 if(self.ui.Driving_Mode == 2):
                     self.ui.Camera.Take(2)
             if(ev.key() == 16777236 and self.SentPrev != 3):
@@ -35,7 +35,7 @@ class Window(QtGui.QMainWindow):
                 if(self.ui.Driving_Mode == 2):
                     self.ui.Camera.Take(4)
             if(ev.key() == 16777249 and self.SentPrev != 5):
-                print 'Left'
+                print 'Stop'
                 self.SentPrev = 5
                 self.ui.SendSerial('S')
                 if(self.ui.Driving_Mode == 2):

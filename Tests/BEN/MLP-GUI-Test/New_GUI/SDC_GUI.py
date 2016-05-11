@@ -493,7 +493,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.dial_mlp1_batch.setGeometry(QtCore.QRect(170, 40, 41, 41))
         self.dial_mlp1_batch.setMinimum(1)
         self.dial_mlp1_batch.setMaximum(1000)
-        self.dial_mlp1_batch.setSingleStep(10)
+        self.dial_mlp1_batch.setSingleStep(1)
         self.dial_mlp1_batch.setProperty("value", 30)
         self.dial_mlp1_batch.setObjectName(_fromUtf8("dial_mlp1_batch"))
         self.dial_mlp1_loop = QtGui.QDial(self.mlp_status_box_2)

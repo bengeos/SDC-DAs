@@ -30,6 +30,9 @@ class NeuralNetwork(object):
         vec[val] = 1.0
         return vec
     def LoadTrainigData(self,filePath):
+        print 'Resetting mlp ...'
+        self.MyNet.init_Biases()
+        self.MyNet.init_Weight()
         print 'Loading Trainig Files'
         print filePath
         self.TrainingData = []
@@ -77,6 +80,7 @@ class NeuralNetwork(object):
         TestData = zip(TestingData,TestingResult)
         Result = self.MyNet.Evaluate_Data(TestData)
         return Result
+
     def Learn(self,csvFIle='TrainingData.csv'):
         self.LoadTrainigData(csvFIle)
         self.TrainMLP()

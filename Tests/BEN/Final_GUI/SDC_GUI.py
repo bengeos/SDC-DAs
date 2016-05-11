@@ -6,6 +6,15 @@ import sys
 import IP_Cam as cam
 import serial as sp
 import NeuralNetwork as MLP
+import SDC_Mode as DrivingMode
+import cv2
+import urllib2
+import numpy as np
+from multiprocessing import Process,Value,Array
+def RealtimeProcess(self):
+    while(1):
+        print 'Bengeos--------------------->'
+        time.sleep(1)
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -488,15 +497,15 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.dial_mlp1_batch = QtGui.QDial(self.mlp_status_box_2)
         self.dial_mlp1_batch.setGeometry(QtCore.QRect(170, 40, 41, 41))
         self.dial_mlp1_batch.setMinimum(1)
-        self.dial_mlp1_batch.setMaximum(1000)
-        self.dial_mlp1_batch.setSingleStep(10)
+        self.dial_mlp1_batch.setMaximum(999)
+        self.dial_mlp1_batch.setSingleStep(1)
         self.dial_mlp1_batch.setProperty("value", 30)
         self.dial_mlp1_batch.setObjectName(_fromUtf8("dial_mlp1_batch"))
         self.dial_mlp1_loop = QtGui.QDial(self.mlp_status_box_2)
         self.dial_mlp1_loop.setGeometry(QtCore.QRect(200, 70, 41, 41))
-        self.dial_mlp1_loop.setMinimum(50)
+        self.dial_mlp1_loop.setMinimum(1)
         self.dial_mlp1_loop.setMaximum(9999)
-        self.dial_mlp1_loop.setSingleStep(50)
+        self.dial_mlp1_loop.setSingleStep(1)
         self.dial_mlp1_loop.setProperty("value", 30)
         self.dial_mlp1_loop.setObjectName(_fromUtf8("dial_mlp1_loop"))
         self.btn_mlp1_save = QtGui.QPushButton(self.mlp_status_box_2)
@@ -1459,6 +1468,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.Driving_Mode = -1;
         self.SerialPort = None
         self.NeuronFilePath = ''
+        self.SDCDriving = DrivingMode.SDC_Mode(self.MLP_Net_Layer,self.Camera.Host,self.Camera.Size,"")
         self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
         self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
         self.btn_add_layer.clicked.connect(self.add_item)
@@ -1470,6 +1480,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_mlp1_start.clicked.connect(self.Start_Training)
         self.btn_mlp1_save.clicked.connect(self.Save_MLP)
         self.btn_create_neurone.clicked.connect(self.Save_Neuron_FileDialog)
+        self.btn_self_driving_start.clicked.connect(self.Start_In_Realtime)
 
         self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
         self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.change_Loop_Value)
@@ -1602,7 +1613,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
             return (1000,600)
         else:
             return (50,50)
-
     def SendSerial(self,char):
         self.SerialPort.write(char)
     def init_SDC(self):
@@ -1635,9 +1645,18 @@ class Ui_MainWindow(QtGui.QMainWindow):
 
         self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
         self.Camera.Size = self.ImageSize
+        self.SDCDriving = DrivingMode.SDC_Mode(self.MLP_Net_Layer,self.Camera.Host,self.Camera.Size,str(self.cmb_serial_port.currentText()))
+
 
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)
         self.SerialPort.close()
+
+    def Start_In_Realtime(self):
+        self.SerialPort.close()
+        self.SDCDriving.Connect_Serial()
+        self.SDCDriving.Load_Trained_MLP(self.NeuronFilePath)
+        self.SDCDriving.Start_Driving()
+
 

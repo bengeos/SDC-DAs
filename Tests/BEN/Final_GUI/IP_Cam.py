@@ -38,8 +38,7 @@ class IP_Cam(object):
                 x = np.size(self.Frame)
                 if(x>= self.Size[0]*self.Size[1]):
                     try:
-                        self.Image = cv2.resize(self.Frame,self.getImageSize())
-                        cv2.imshow('IP Camera '+self.Host,self.Image)
+                        cv2.imshow('IP Camera '+self.Host,self.Frame)
                     finally:
                         x = 0
                 k = cv2.waitKey(1) - 48
