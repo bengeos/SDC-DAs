@@ -132,7 +132,8 @@ class MLP(object):
                 y.append(float(val)/n_test*100)
                 print "Loop {0}: {1} / {2} | {3}%".format(j,val , n_test,float(val)/n_test*100)
                 self.TrainningProgress = int(j)/loop*100
-                print float(val)/n_test*100
+                if(self.TrainningProgress == 100):
+                    break
                 self.TrainningResult = float(val)/n_test*100
             else:
                 print "Loop {0} complete".format(j)

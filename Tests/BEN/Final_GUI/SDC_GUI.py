@@ -4,7 +4,6 @@ from multiprocessing import Process,Value,Array
 import time
 import sys
 import IP_Cam as cam
-import serial as sp
 import NeuralNetwork as MLP
 import SDC_Mode as DrivingMode
 import cv2
@@ -136,6 +135,8 @@ class Ui_MainWindow(QtGui.QMainWindow):
         font.setPointSize(12)
         self.cmb_camera_size.setFont(font)
         self.cmb_camera_size.setObjectName(_fromUtf8("cmb_camera_size"))
+        self.cmb_camera_size.addItem(_fromUtf8(""))
+        self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
@@ -1377,11 +1378,13 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_browse_neuron.setText(_translate("MainWindow", "Browse", None))
         self.btn_create_neurone.setText(_translate("MainWindow", "Create", None))
         self.label_7.setText(_translate("MainWindow", "Camera Size", None))
-        self.cmb_camera_size.setItemText(0, _translate("MainWindow", "50 x 50", None))
-        self.cmb_camera_size.setItemText(1, _translate("MainWindow", "100 x 100", None))
-        self.cmb_camera_size.setItemText(2, _translate("MainWindow", "800 x 500", None))
-        self.cmb_camera_size.setItemText(3, _translate("MainWindow", "1000 x 600", None))
-        self.cmb_camera_size.setItemText(4, _translate("MainWindow", "1000 x 800", None))
+        self.cmb_camera_size.setItemText(0, _translate("MainWindow", "10 x 10", None))
+        self.cmb_camera_size.setItemText(1, _translate("MainWindow", "20 x 20", None))
+        self.cmb_camera_size.setItemText(2, _translate("MainWindow", "30 x 30", None))
+        self.cmb_camera_size.setItemText(3, _translate("MainWindow", "50 x 50", None))
+        self.cmb_camera_size.setItemText(4, _translate("MainWindow", "100 x 100", None))
+        self.cmb_camera_size.setItemText(5, _translate("MainWindow", "800 x 500", None))
+        self.cmb_camera_size.setItemText(6, _translate("MainWindow", "1000 x 600", None))
         self.label_8.setText(_translate("MainWindow", "Neuron File", None))
         self.label_9.setText(_translate("MainWindow", "Haar Cas. File", None))
         self.txt_haar_path.setText(_translate("MainWindow", "c:/My_Neural/Network/MLP.xml", None))
@@ -1466,9 +1469,8 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.ImageSize = (50,50)
         self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
         self.Driving_Mode = -1;
-        self.SerialPort = None
         self.NeuronFilePath = ''
-        self.SDCDriving = DrivingMode.SDC_Mode(self.MLP_Net_Layer,self.Camera.Host,self.Camera.Size,"")
+        self.SDCDriving = None
         self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
         self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
         self.btn_add_layer.clicked.connect(self.add_item)
@@ -1481,11 +1483,16 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_mlp1_save.clicked.connect(self.Save_MLP)
         self.btn_create_neurone.clicked.connect(self.Save_Neuron_FileDialog)
         self.btn_self_driving_start.clicked.connect(self.Start_In_Realtime)
+        self.txte_camera_host.setText('http://192.168.43.1:8080/video')
+
 
         self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
         self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.change_Loop_Value)
         self.centralwidget.connect(self.dial_mlp1_batch, QtCore.SIGNAL('valueChanged(int)'),self.change_Batch_Value)
         self.centralwidget.connect(self.dial_mlp1_epsilon, QtCore.SIGNAL('valueChanged(int)'),self.change_Epsilon_Value)
+        self.centralwidget.connect(self.bar_free_mode_speed, QtCore.SIGNAL('valueChanged(int)'),self.FreeModeSpeed)
+        self.centralwidget.connect(self.bar_self_driving_speed, QtCore.SIGNAL('valueChanged(int)'),self.SelfDrivingSpeed)
+
         self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
         self.btn_free_mode_start.clicked.connect(self.StartFreeMode)
         self.grp_free_mode.clicked.connect(self.StartFreeMode)
@@ -1494,8 +1501,19 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.grp_free_mode.setChecked(True)
         self.grp_training.setChecked(False)
         self.grp_self_driving.setChecked(False)
+    def FreeModeSpeed(self, value):
+        pos = int(self.bar_free_mode_speed.value())
+        self.SDCDriving.ChangeSpeed(str(pos))
+        print 'Free Mode Speed Value '+str(pos)
+
+    def SelfDrivingSpeed(self, value):
+        pos = int(self.bar_self_driving_speed.value())
+        self.SDCDriving.ChangeSpeed(str(pos))
+        print 'Self Driving Mode Speed Value '+str(pos)
+
     def Save_MLP(self):
         self.MLP.Save_To(self.NeuronFilePath)
+
     def change_Loop_Value(self, value):
         pos = self.dial_mlp1_loop.value()
         self.txt_mlp1_loop_number.setText("Loop Number: "+str(pos/10))
@@ -1601,20 +1619,22 @@ class Ui_MainWindow(QtGui.QMainWindow):
         if (ok):
             self.lst_mlp_layers.addItem(val)
     def getImageSize(self,str):
+        if(str == '10 x 10'):
+            return (10,10)
+        if(str == '20 x 20'):
+            return (20,20)
+        if(str == '30 x 30'):
+            return (30,30)
         if(str == '50 x 50'):
             return (50,50)
         if(str == '100 x 100'):
             return (100,100)
         if(str == '800 x 500'):
             return (800,500)
-        if(str == '1000 x 800'):
-            return (1000,800)
         if(str == '1000 x 600'):
             return (1000,600)
         else:
             return (50,50)
-    def SendSerial(self,char):
-        self.SerialPort.write(char)
     def init_SDC(self):
         self.groupBox.setEnabled(False)
         self.group_workarea.setEnabled(True)
@@ -1627,11 +1647,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
             self.MLP_Net_Layer.append(int(self.lst_mlp_layers.item(x).text()))
         self.MLP_Net_Layer.append(10)
         self.Camera.Host = 'http://192.168.43.1:8080/video'
+
         print str(self.Camera.Host)
         self.Camera = cam.IP_Cam(str(self.txte_camera_host.text()))
-        self.SerialPort = sp.Serial(str(self.cmb_serial_port.currentText()))
         print 'initializing serial port:'
-        print self.SerialPort
         self.Driving_Mode = -1
         self.grp_self_driving.setChecked(False)
         self.grp_training.setChecked(False)
@@ -1646,16 +1665,13 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
         self.Camera.Size = self.ImageSize
         self.SDCDriving = DrivingMode.SDC_Mode(self.MLP_Net_Layer,self.Camera.Host,self.Camera.Size,str(self.cmb_serial_port.currentText()))
-
+        self.SDCDriving.Connect_Serial()
 
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)
-        self.SerialPort.close()
 
     def Start_In_Realtime(self):
-        self.SerialPort.close()
-        self.SDCDriving.Connect_Serial()
         self.SDCDriving.Load_Trained_MLP(self.NeuronFilePath)
         self.SDCDriving.Start_Driving()
 

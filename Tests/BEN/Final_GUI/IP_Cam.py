@@ -28,7 +28,7 @@ class IP_Cam(object):
         bytes=''
         self.isRunning = True
         while(self.isRunning):
-            bytes+=self.Stream.read(10024)
+            bytes+=self.Stream.read(512)
             a = bytes.find('\xff\xd8')
             b = bytes.find('\xff\xd9')
             if a!=-1 and b!=-1:
@@ -52,7 +52,7 @@ class IP_Cam(object):
         self.isRunning = True
         trail = 100;
         while(trail > 0):
-            bytes+=self.Stream.read(10024)
+            bytes+=self.Stream.read(512)
             a = bytes.find('\xff\xd8')
             b = bytes.find('\xff\xd9')
             if a!=-1 and b!=-1:

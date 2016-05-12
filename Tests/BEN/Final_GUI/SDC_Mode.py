@@ -3,9 +3,7 @@ import cv2
 import urllib2
 import numpy as np
 import serial as sp
-import sys
 import time
-import csv
 
 class SDC_Mode(object):
     def __init__(self,NetLayers,ip_camera_host,capture_image_size,serialport):
@@ -15,30 +13,40 @@ class SDC_Mode(object):
         self.Image = None
         self.Size = capture_image_size
         self.Port = serialport
-    def Connect_Serial(self):
+        self.Speed = 1
         self.SerialPort = sp.Serial(self.Port)
+    def Connect_Serial(self):
+        print 'Connecting to Serial Port: '+self.Port
+    def Disconnect_Serial(self):
+        self.SerialPort.close()
+    def ChangeSpeed(self,new_speed):
+        self.Speed = new_speed
+        self.SerialPort.write(new_speed)
     def Send_Serial(self,data):
-        if(data == 1):
-            self.SerialPort.write('W')
-        if(data == 2):
-            self.SerialPort.write('Z')
-        if(data == 3):
-            self.SerialPort.write('D')
-        if(data == 4):
-            self.SerialPort.write('A')
-        if(data == 5):
-            self.SerialPort.write('S')
+        print 'Sending Serial Data: '+str(data)
+        self.SerialPort.write(str(data))
     def Load_Trained_MLP(self,mlp_xml_file):
         print 'Loading trained data'
         self.MyNet.Load_From(mlp_xml_file)
         print self.MyNet.Weights
+    def Drive_Serial(self,data):
+        if(data == 1):
+            self.Send_Serial('W')
+        if(data == 2):
+            self.Send_Serial('Z')
+        if(data == 3):
+            self.Send_Serial('D')
+        if(data == 4):
+            self.Send_Serial('A')
+        if(data == 5):
+            self.Send_Serial('S')
     def Start_Driving(self):
         print 'Start self driving mode'
         self.Stream = urllib2.urlopen(self.Host)
         bytes=''
         self.isRunning = True
         while(self.isRunning):
-            bytes+=self.Stream.read(10024)
+            bytes+=self.Stream.read(512)
             a = bytes.find('\xff\xd8')
             b = bytes.find('\xff\xd9')
             if a!=-1 and b!=-1:
@@ -49,9 +57,6 @@ class SDC_Mode(object):
                 if(x >= self.Size[0]*self.Size[1]):
                     try:
                         self.Image = cv2.resize(self.Frame,self.Size)
-                        print 'Capture Size'+str(self.Size)
-                        print np.shape(np.mat(self.Image))
-                        print self.Image
                         ImageArray = self.Image.reshape(-1,self.MyNet.Network_Shape[0]).astype(np.float32)
                         _TrainingData = []
                         _TestingData = []
@@ -60,10 +65,10 @@ class SDC_Mode(object):
                         TestingData = [np.reshape(x, (self.MyNet.Network_Shape[0], 1)) for x in _TrainingData]
                         TestingResult = [np.reshape(x, (1, 1)) for x in _TestingData]
                         TestData = zip(TestingData,TestingResult)
-                        res = self.MyNet.Evaluate(TestData)
-                        print 'Learning Result: '
+                        res = self.MyNet.Evaluate_Data(TestData)
+                        print 'Capture Result: '
                         print res
-                        self.Send_Serial(res[0])
+                        self.Drive_Serial(res[0])
                         cv2.imshow('IP Camera '+self.Host,self.Frame)
                     finally:
                         x = 0
