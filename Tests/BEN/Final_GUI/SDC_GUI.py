@@ -9,6 +9,7 @@ import SDC_Mode as DrivingMode
 import cv2
 import urllib2
 import numpy as np
+import threading
 from multiprocessing import Process,Value,Array
 def RealtimeProcess(self):
     while(1):
@@ -480,7 +481,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.label_27.setObjectName(_fromUtf8("label_27"))
         self.prg_mlp1_percent = QtGui.QProgressBar(self.mlp_status_box_2)
         self.prg_mlp1_percent.setGeometry(QtCore.QRect(20, 170, 231, 23))
-        self.prg_mlp1_percent.setProperty("value", 24)
+        self.prg_mlp1_percent.setProperty("value", 0)
         self.prg_mlp1_percent.setObjectName(_fromUtf8("prg_mlp1_percent"))
         self.btn_mlp1_start = QtGui.QPushButton(self.mlp_status_box_2)
         self.btn_mlp1_start.setGeometry(QtCore.QRect(20, 200, 51, 23))
@@ -493,7 +494,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_mlp1_load.setObjectName(_fromUtf8("btn_mlp1_load"))
         self.prg_mlp1_accuracy = QtGui.QProgressBar(self.mlp_status_box_2)
         self.prg_mlp1_accuracy.setGeometry(QtCore.QRect(160, 140, 91, 20))
-        self.prg_mlp1_accuracy.setProperty("value", 90)
+        self.prg_mlp1_accuracy.setProperty("value", 0)
         self.prg_mlp1_accuracy.setObjectName(_fromUtf8("prg_mlp1_accuracy"))
         self.dial_mlp1_batch = QtGui.QDial(self.mlp_status_box_2)
         self.dial_mlp1_batch.setGeometry(QtCore.QRect(170, 40, 41, 41))
@@ -1471,6 +1472,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.Driving_Mode = -1;
         self.NeuronFilePath = ''
         self.SDCDriving = None
+        self.isTraining = False
         self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
         self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
         self.btn_add_layer.clicked.connect(self.add_item)
@@ -1479,8 +1481,9 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_create_haar.clicked.connect(self.Save_Haar_FileDialog)
         self.btn_init_sdc.clicked.connect(self.init_SDC)
         self.btn_mlp1_load.clicked.connect(self.Load_Training_Images)
-        self.btn_mlp1_start.clicked.connect(self.Start_Training)
+        self.btn_mlp1_start.clicked.connect(self.Train)
         self.btn_mlp1_save.clicked.connect(self.Save_MLP)
+        self.btn_mlp1_stop.clicked.connect(self.Stop_Training)
         self.btn_create_neurone.clicked.connect(self.Save_Neuron_FileDialog)
         self.btn_self_driving_start.clicked.connect(self.Start_In_Realtime)
         self.txte_camera_host.setText('http://192.168.43.1:8080/video')
@@ -1501,6 +1504,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.grp_free_mode.setChecked(True)
         self.grp_training.setChecked(False)
         self.grp_self_driving.setChecked(False)
+
+        self._update_timer = QtCore.QTimer()
+        self._update_timer.timeout.connect(self.checkProgress)
+        self._update_timer.start(1000)
     def FreeModeSpeed(self, value):
         pos = int(self.bar_free_mode_speed.value())
         self.SDCDriving.ChangeSpeed(str(pos))
@@ -1533,11 +1540,24 @@ class Ui_MainWindow(QtGui.QMainWindow):
     def Load_Training_Images(self):
         self.MLP.LoadTrainigData(self.TrainigCSVFile)
         self.txt_mlp1_training_images.setText("Training Images: "+str(self.MLP.Count))
+    def Train(self):
+        self.isTraining = True
+        self.training_thread = threading.Thread(target=self.Start_Training, args=())
+        self.training_thread.start()
+
+    def checkProgress(self):
+        if(self.Driving_Mode == 2):
+            self.txt_wheel_state.setText(self.SDCDriving.WheelState)
+        if (self.isTraining == True):
+            self.prg_mlp1_accuracy.setValue(self.MLP.MyNet.TrainningResult)
+            self.prg_mlp1_percent.setValue(self.MLP.MyNet.TrainningProgress)
+    def Stop_Training(self):
+        self.MLP.StopLearning()
+
     def Start_Training(self):
         if(self.MLP.Count > 0):
             self.MLP.TrainMLP()
             print 'The result is: '+str(self.MLP.MyNet.TrainningResult)
-            self.prg_mlp1_accuracy.setValue(self.MLP.MyNet.TrainningResult)
         else:
             print 'Nothing to learn from!'
 
@@ -1665,7 +1685,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
         self.Camera.Size = self.ImageSize
         self.SDCDriving = DrivingMode.SDC_Mode(self.MLP_Net_Layer,self.Camera.Host,self.Camera.Size,str(self.cmb_serial_port.currentText()))
-        self.SDCDriving.Connect_Serial()
 
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
