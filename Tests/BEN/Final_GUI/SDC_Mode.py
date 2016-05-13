@@ -56,13 +56,13 @@ class SDC_Mode(object):
     def Drive_Serial(self,data):
         if(data == 1):
             self.Send_Serial('W')
-        if(data == 2):
+        elif (data == 2):
             self.Send_Serial('Z')
-        if(data == 3):
+        elif(data == 3):
             self.Send_Serial('D')
-        if(data == 4):
+        elif(data == 4):
             self.Send_Serial('A')
-        if(data == 5):
+        elif(data == 5):
             self.Send_Serial('S')
         else:
             self.Send_Serial('S')
@@ -88,10 +88,10 @@ class SDC_Mode(object):
                     self.Update_WheelState(res[0])
                     self.Drive_Serial(res[0])
                     cv2.imshow('IP Camera '+self.Host,self.Frame)
-                    self.Drive_Serial(0)
                 finally:
                     pass
             k = cv2.waitKey(1000)
+            self.Update_WheelState(0)
             if(k == 27):
                 self.Update_WheelState(0)
                 self.Camera.Stop()
