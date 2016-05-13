@@ -131,18 +131,22 @@ class MLP(object):
                 x.append(j)
                 y.append(float(val)/n_test*100)
                 print "Loop {0}: {1} / {2} | {3}%".format(j,val , n_test,float(val)/n_test*100)
-                self.TrainningProgress = int(j)/loop*100
+                self.TrainningProgress =(float (j+1)/loop)*100
+                print 'Progress: '+str(self.TrainningProgress)
                 if(self.TrainningProgress == 100):
                     break
                 self.TrainningResult = float(val)/n_test*100
             else:
                 print "Loop {0} complete".format(j)
+            if(not self.IsTraining):
+                break
+        self.IsTraining = False
+    def StopTraining(self):
         self.IsTraining = False
     def Evaluate(self, test_data):
         test_results = [(np.argmax(self.Forward(x)), y)for (x, y) in test_data]
         return sum(int(x == y) for (x, y) in test_results)
     def Evaluate_Data(self, test_data):
-        print np.shape(test_data)
         test_results = [(np.argmax(self.Forward(x)), y)for (x, y) in test_data]
         z = []
         for (x,y) in test_results:
