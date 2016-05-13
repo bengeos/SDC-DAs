@@ -80,7 +80,8 @@ class NeuralNetwork(object):
         TestData = zip(TestingData,TestingResult)
         Result = self.MyNet.Evaluate_Data(TestData)
         return Result
-
+    def StopLearning(self):
+        self.MyNet.StopTraining()
     def Learn(self,csvFIle='TrainingData.csv'):
         self.LoadTrainigData(csvFIle)
         self.TrainMLP()
