@@ -9,14 +9,14 @@ import time
 class SDC_Mode(object):
     def __init__(self,NetLayers,ip_camera_host,capture_image_size,serialport):
         self.MyNet = net.MLP(NetLayers)
+        self.Port = serialport
+        self.SerialPort = sp.Serial(self.Port)
         self.Camera = cam.Camera(ip_camera_host)
         self.Host = ip_camera_host
         self.Frame = None
         self.Image = None
         self.Size = capture_image_size
-        self.Port = serialport
         self.Speed = 1
-        self.SerialPort = sp.Serial(self.Port)
         self.SerialThread = threading.Thread(target=self.ReadWriteSerial,args=())
         self.SerialWrite = None
         self.SerialRead = None
