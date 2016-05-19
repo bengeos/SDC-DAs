@@ -4,13 +4,18 @@ from multiprocessing import Process,Value,Array
 import time
 import sys
 import IP_Cam as cam
-import serial as sp
-import MLP as My_Net
+import NeuralNetwork as MLP
+import SDC_Mode as DrivingMode
+import cv2
+import urllib2
+import numpy as np
+import threading
+from multiprocessing import Process,Value,Array
+def RealtimeProcess(self):
+    while(1):
+        print 'Bengeos--------------------->'
+        time.sleep(1)
 
-#Cam2 = cam.IP_Cam('http://192.168.43.1:8080/video')
-SP = sp.Serial()
-def init_port(port_name):
-    SP.port = port_name
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -48,7 +53,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.cmb_camera_source = QtGui.QComboBox(self.group_setup_sources)
         self.cmb_camera_source.setGeometry(QtCore.QRect(150, 30, 141, 22))
         font = QtGui.QFont()
-
         font.setFamily(_fromUtf8("Times New Roman"))
         font.setPointSize(12)
         self.cmb_camera_source.setFont(font)
@@ -132,6 +136,8 @@ class Ui_MainWindow(QtGui.QMainWindow):
         font.setPointSize(12)
         self.cmb_camera_size.setFont(font)
         self.cmb_camera_size.setObjectName(_fromUtf8("cmb_camera_size"))
+        self.cmb_camera_size.addItem(_fromUtf8(""))
+        self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
         self.cmb_camera_size.addItem(_fromUtf8(""))
@@ -475,7 +481,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.label_27.setObjectName(_fromUtf8("label_27"))
         self.prg_mlp1_percent = QtGui.QProgressBar(self.mlp_status_box_2)
         self.prg_mlp1_percent.setGeometry(QtCore.QRect(20, 170, 231, 23))
-        self.prg_mlp1_percent.setProperty("value", 24)
+        self.prg_mlp1_percent.setProperty("value", 0)
         self.prg_mlp1_percent.setObjectName(_fromUtf8("prg_mlp1_percent"))
         self.btn_mlp1_start = QtGui.QPushButton(self.mlp_status_box_2)
         self.btn_mlp1_start.setGeometry(QtCore.QRect(20, 200, 51, 23))
@@ -488,20 +494,20 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_mlp1_load.setObjectName(_fromUtf8("btn_mlp1_load"))
         self.prg_mlp1_accuracy = QtGui.QProgressBar(self.mlp_status_box_2)
         self.prg_mlp1_accuracy.setGeometry(QtCore.QRect(160, 140, 91, 20))
-        self.prg_mlp1_accuracy.setProperty("value", 90)
+        self.prg_mlp1_accuracy.setProperty("value", 0)
         self.prg_mlp1_accuracy.setObjectName(_fromUtf8("prg_mlp1_accuracy"))
         self.dial_mlp1_batch = QtGui.QDial(self.mlp_status_box_2)
         self.dial_mlp1_batch.setGeometry(QtCore.QRect(170, 40, 41, 41))
         self.dial_mlp1_batch.setMinimum(1)
-        self.dial_mlp1_batch.setMaximum(1000)
+        self.dial_mlp1_batch.setMaximum(999)
         self.dial_mlp1_batch.setSingleStep(1)
         self.dial_mlp1_batch.setProperty("value", 30)
         self.dial_mlp1_batch.setObjectName(_fromUtf8("dial_mlp1_batch"))
         self.dial_mlp1_loop = QtGui.QDial(self.mlp_status_box_2)
         self.dial_mlp1_loop.setGeometry(QtCore.QRect(200, 70, 41, 41))
-        self.dial_mlp1_loop.setMinimum(50)
+        self.dial_mlp1_loop.setMinimum(1)
         self.dial_mlp1_loop.setMaximum(9999)
-        self.dial_mlp1_loop.setSingleStep(50)
+        self.dial_mlp1_loop.setSingleStep(1)
         self.dial_mlp1_loop.setProperty("value", 30)
         self.dial_mlp1_loop.setObjectName(_fromUtf8("dial_mlp1_loop"))
         self.btn_mlp1_save = QtGui.QPushButton(self.mlp_status_box_2)
@@ -1373,11 +1379,13 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_browse_neuron.setText(_translate("MainWindow", "Browse", None))
         self.btn_create_neurone.setText(_translate("MainWindow", "Create", None))
         self.label_7.setText(_translate("MainWindow", "Camera Size", None))
-        self.cmb_camera_size.setItemText(0, _translate("MainWindow", "50 x 50", None))
-        self.cmb_camera_size.setItemText(1, _translate("MainWindow", "100 x 100", None))
-        self.cmb_camera_size.setItemText(2, _translate("MainWindow", "800 x 500", None))
-        self.cmb_camera_size.setItemText(3, _translate("MainWindow", "1000 x 600", None))
-        self.cmb_camera_size.setItemText(4, _translate("MainWindow", "1000 x 800", None))
+        self.cmb_camera_size.setItemText(0, _translate("MainWindow", "10 x 10", None))
+        self.cmb_camera_size.setItemText(1, _translate("MainWindow", "20 x 20", None))
+        self.cmb_camera_size.setItemText(2, _translate("MainWindow", "30 x 30", None))
+        self.cmb_camera_size.setItemText(3, _translate("MainWindow", "50 x 50", None))
+        self.cmb_camera_size.setItemText(4, _translate("MainWindow", "100 x 100", None))
+        self.cmb_camera_size.setItemText(5, _translate("MainWindow", "800 x 500", None))
+        self.cmb_camera_size.setItemText(6, _translate("MainWindow", "1000 x 600", None))
         self.label_8.setText(_translate("MainWindow", "Neuron File", None))
         self.label_9.setText(_translate("MainWindow", "Haar Cas. File", None))
         self.txt_haar_path.setText(_translate("MainWindow", "c:/My_Neural/Network/MLP.xml", None))
@@ -1458,8 +1466,13 @@ class Ui_MainWindow(QtGui.QMainWindow):
 
     def init_with_gui(self):
         self.Camera = cam.IP_Cam("")
-        self.MLP_Net = []
-        self.MLP = My_Net.MLP([0,0,10])
+        self.MLP_Net_Layer = [2500]
+        self.ImageSize = (50,50)
+        self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
+        self.Driving_Mode = -1;
+        self.NeuronFilePath = ''
+        self.SDCDriving = None
+        self.isTraining = False
         self.btn_browse_training_folder.clicked.connect(self.Open_Training_File_Dialog)
         self.btn_browse_neuron.clicked.connect(self.Open_Neuron_File_Dialog)
         self.btn_add_layer.clicked.connect(self.add_item)
@@ -1467,10 +1480,103 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.btn_browse_haar.clicked.connect(self.Open_Haar_File_Dialog)
         self.btn_create_haar.clicked.connect(self.Save_Haar_FileDialog)
         self.btn_init_sdc.clicked.connect(self.init_SDC)
-        self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
-        self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.changeValue)
-        self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
+        self.btn_mlp1_load.clicked.connect(self.Load_Training_Images)
+        self.btn_mlp1_start.clicked.connect(self.Train)
+        self.btn_mlp1_save.clicked.connect(self.Save_MLP)
+        self.btn_mlp1_stop.clicked.connect(self.Stop_Training)
+        self.btn_create_neurone.clicked.connect(self.Save_Neuron_FileDialog)
+        self.btn_self_driving_start.clicked.connect(self.Start_In_Realtime)
+        self.txte_camera_host.setText('http://192.168.43.1:8080/video')
 
+
+        self.btn_stop_sdc_system.clicked.connect(self.stop_SDC)
+        self.centralwidget.connect(self.dial_mlp1_loop, QtCore.SIGNAL('valueChanged(int)'),self.change_Loop_Value)
+        self.centralwidget.connect(self.dial_mlp1_batch, QtCore.SIGNAL('valueChanged(int)'),self.change_Batch_Value)
+        self.centralwidget.connect(self.dial_mlp1_epsilon, QtCore.SIGNAL('valueChanged(int)'),self.change_Epsilon_Value)
+        self.centralwidget.connect(self.bar_free_mode_speed, QtCore.SIGNAL('valueChanged(int)'),self.FreeModeSpeed)
+        self.centralwidget.connect(self.bar_self_driving_speed, QtCore.SIGNAL('valueChanged(int)'),self.SelfDrivingSpeed)
+
+        self.cbx_visualize_camera.stateChanged.connect(self.Visualise_Camera_State)
+        self.btn_free_mode_start.clicked.connect(self.StartFreeMode)
+        self.grp_free_mode.clicked.connect(self.StartFreeMode)
+        self.grp_self_driving.clicked.connect(self.StartSelfDrivingMode)
+        self.grp_training.clicked.connect(self.StartTrainningMode)
+        self.grp_free_mode.setChecked(True)
+        self.grp_training.setChecked(False)
+        self.grp_self_driving.setChecked(False)
+
+        self._update_timer = QtCore.QTimer()
+        self._update_timer.timeout.connect(self.checkProgress)
+        self._update_timer.start(1000)
+    def FreeModeSpeed(self, value):
+        pos = int(self.bar_free_mode_speed.value())
+        self.SDCDriving.ChangeSpeed(str(pos))
+        print 'Free Mode Speed Value '+str(pos)
+
+    def SelfDrivingSpeed(self, value):
+        pos = int(self.bar_self_driving_speed.value())
+        self.SDCDriving.ChangeSpeed(str(pos))
+        print 'Self Driving Mode Speed Value '+str(pos)
+
+    def Save_MLP(self):
+        self.MLP.Save_To(self.NeuronFilePath)
+
+    def change_Loop_Value(self, value):
+        pos = self.dial_mlp1_loop.value()
+        self.txt_mlp1_loop_number.setText("Loop Number: "+str(pos/10))
+        self.MLP.Iteration = pos/10
+        print 'Set Looping Count: '+str(pos/10)
+    def change_Batch_Value(self, value):
+        pos = self.dial_mlp1_batch.value()
+        self.txt_mlp1_batch_number.setText("Batch No.: "+str(pos))
+        self.MLP.BatchTask = pos
+        print 'Set Batch Number: '+str(pos)
+    def change_Epsilon_Value(self, value):
+        pos = float(self.dial_mlp1_epsilon.value())/100
+        self.txt_mlp1_epsilon.setText("Epsilon: "+str(pos))
+        self.MLP.Epselom = pos
+        print 'Set Epsilom Value'+str(pos)
+
+    def Load_Training_Images(self):
+        self.MLP.LoadTrainigData(self.TrainigCSVFile)
+        self.txt_mlp1_training_images.setText("Training Images: "+str(self.MLP.Count))
+    def Train(self):
+        self.isTraining = True
+        self.training_thread = threading.Thread(target=self.Start_Training, args=())
+        self.training_thread.start()
+
+    def checkProgress(self):
+        if(self.Driving_Mode == 2):
+            self.txt_wheel_state.setText(self.SDCDriving.WheelState)
+        if (self.isTraining == True):
+            self.prg_mlp1_accuracy.setValue(self.MLP.MyNet.TrainningResult)
+            self.prg_mlp1_percent.setValue(self.MLP.MyNet.TrainningProgress)
+    def Stop_Training(self):
+        self.MLP.StopLearning()
+
+    def Start_Training(self):
+        if(self.MLP.Count > 0):
+            self.MLP.TrainMLP()
+            print 'The result is: '+str(self.MLP.MyNet.TrainningResult)
+        else:
+            print 'Nothing to learn from!'
+
+    def StartFreeMode(self):
+        self.grp_self_driving.setChecked(False)
+        self.grp_training.setChecked(False)
+        self.grp_free_mode.setChecked(True)
+        self.groupBox_15.setEnabled(False)
+        self.Driving_Mode = 0;
+    def StartTrainningMode(self):
+        self.grp_self_driving.setChecked(False)
+        self.grp_training.setChecked(True)
+        self.grp_free_mode.setChecked(False)
+        self.Driving_Mode = 1;
+    def StartSelfDrivingMode(self):
+        self.grp_self_driving.setChecked(True)
+        self.grp_training.setChecked(False)
+        self.grp_free_mode.setChecked(False)
+        self.Driving_Mode = 2;
     def init_camera(self,host):
         self.Camera = cam.IP_Cam(host)
         self.Camera.Stop()
@@ -1483,7 +1589,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         print 'Doyble clicked'+ str(args)
     def eventFilter(self, QObject, QEvent):
         print 'some even'
-
 
     def Visualise_Camera_State(self):
         if self.cbx_visualize_camera.isChecked():
@@ -1507,14 +1612,21 @@ class Ui_MainWindow(QtGui.QMainWindow):
     def Open_Training_File_Dialog(self):
         dir_ = QtGui.QFileDialog.getExistingDirectory(None, 'Select a folder:', 'C:\\', QtGui.QFileDialog.ShowDirsOnly)
         self.txt_training_folder_path.setText(dir_)
+        self.TrainigFolder = dir_
+        self.TrainigCSVFile = dir_+str('\TrainingCSV.csv')
+
     def Open_Neuron_File_Dialog(self):
         filename = QtGui.QFileDialog.getOpenFileName(None, 'Open File', '', 'Images (*.xml)',None, QtGui.QFileDialog.DontUseSheet)
         self.txt_neuron_path.setText(filename)
+        self.NeuronFilePath = filename
     def Open_Haar_File_Dialog(self):
         filename = QtGui.QFileDialog.getOpenFileName(None, 'Open File', '', 'Images (*.xml)',None, QtGui.QFileDialog.DontUseSheet)
         self.txt_haar_path.setText(filename)
     def Save_Neuron_FileDialog(self):
         dir_ = QtGui.QFileDialog.getSaveFileName(None, "Save Neuron file as", "", ".xml")
+        file = open(dir_,'w')
+        file.close()
+        self.NeuronFilePath = dir_
         self.txt_neuron_path.setText(dir_)
     def Save_Haar_FileDialog(self):
         dir_ = QtGui.QFileDialog.getSaveFileName(None, "Save Haar Cascade file as", "", ".xml")
@@ -1527,81 +1639,59 @@ class Ui_MainWindow(QtGui.QMainWindow):
         if (ok):
             self.lst_mlp_layers.addItem(val)
     def getImageSize(self,str):
+        if(str == '10 x 10'):
+            return (10,10)
+        if(str == '20 x 20'):
+            return (20,20)
+        if(str == '30 x 30'):
+            return (30,30)
         if(str == '50 x 50'):
             return (50,50)
         if(str == '100 x 100'):
             return (100,100)
         if(str == '800 x 500'):
             return (800,500)
-        if(str == '1000 x 800'):
-            return (1000,800)
         if(str == '1000 x 600'):
             return (1000,600)
         else:
             return (50,50)
-
-    def keyPressEvent(self, event):
-         if type(event) == QtGui.QKeyEvent:
-             print event.key()
-             event.accept()
-         else:
-             event.ignore()
     def init_SDC(self):
         self.groupBox.setEnabled(False)
         self.group_workarea.setEnabled(True)
         print self.cmb_camera_source.currentText()
-        init_port(str(self.cmb_serial_port.currentText()))
-        img_size = self.getImageSize(str(self.cmb_camera_size.currentText()))
-        self.Camera.setImageSize(img_size)
-        self.MLP_Net = []
-        self.MLP_Net.append(img_size[0]*img_size[1])
+        self.ImageSize = self.getImageSize(str(self.cmb_camera_size.currentText()))
+        self.Camera.setImageSize(self.ImageSize)
+        self.MLP_Net_Layer = []
+        self.MLP_Net_Layer.append(self.ImageSize[0]*self.ImageSize[1])
         for x in range(self.lst_mlp_layers.count()):
-            self.MLP_Net.append(int(self.lst_mlp_layers.item(x).text()))
-        self.MLP_Net.append(10)
-        print str(self.MLP_Net)
+            self.MLP_Net_Layer.append(int(self.lst_mlp_layers.item(x).text()))
+        self.MLP_Net_Layer.append(10)
+        self.Camera.Host = 'http://192.168.43.1:8080/video'
+
+        print str(self.Camera.Host)
         self.Camera = cam.IP_Cam(str(self.txte_camera_host.text()))
+        print 'initializing serial port:'
+        self.Driving_Mode = -1
+        self.grp_self_driving.setChecked(False)
+        self.grp_training.setChecked(False)
+        self.grp_free_mode.setChecked(False)
+
+        self.Camera.Folder = self.TrainigFolder
+        self.Camera.csvPath = self.TrainigCSVFile
+        print 'Image Size: '
+        print self.Camera.Size
+        print self.MLP_Net_Layer
+
+        self.MLP = MLP.NeuralNetwork(self.MLP_Net_Layer,self.ImageSize)
+        self.Camera.Size = self.ImageSize
+        self.SDCDriving = DrivingMode.SDC_Mode(self.MLP_Net_Layer,self.Camera.Host,self.Camera.Size,str(self.cmb_serial_port.currentText()))
+
     def stop_SDC(self):
         self.groupBox.setEnabled(True)
         self.group_workarea.setEnabled(False)
-        self.Camera.Stop()
-class Dialog(QtGui.QDialog):
-    def __init__(self, parent = None):
-        super(Dialog,self).__init__(parent)
-        self.resize(300,200)
-        self.key = 0
-    def keyPressEvent(self, event):
-        self.key = event.key()
-        print event.key()
-        if(self.key == 87):
-            SP.write('W\r\n')
-        if(self.key == 68):
-            SP.write('D\r\n')
-        if(self.key == 65):
-            SP.write('A\r\n')
-        if(self.key == 83):
-            SP.write('S\r\n')
-        if(self.key == 81):
-            SP.write('E\r\n')
-        if(self.key == 69):
-            SP.write('Q\r\n')
-        if(self.key == 90):
-            SP.write('Z\r\n')
 
-    def keyReleaseEvent(self, *args, **kwargs):
-        self.key = 0
-        print 'port cloed'
-    def mouseDoubleClickEvent(self, *args, **kwargs):
-        print 'Doyble clicked'+ str(args)
-    def eventFilter(self, QObject, QEvent):
-        print 'some even'
-def Init_GUI():
-    app = QtGui.QApplication(sys.argv)
-    MainWindow = QtGui.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
-    MainWindow.show()
-    sys.exit(app.exec_())
+    def Start_In_Realtime(self):
+        self.SDCDriving.Load_Trained_MLP(self.NeuronFilePath)
+        self.SDCDriving.Start_Driving()
 
-if __name__ == "__main__":
-    P1 = Process(target=Init_GUI)
-    P1.start()
+
