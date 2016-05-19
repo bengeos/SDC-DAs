@@ -45,6 +45,7 @@ class Ui_MainWindow(object):
         self.cmb_camera_source = QtGui.QComboBox(self.group_setup_sources)
         self.cmb_camera_source.setGeometry(QtCore.QRect(150, 30, 141, 22))
         font = QtGui.QFont()
+
         font.setFamily(_fromUtf8("Times New Roman"))
         font.setPointSize(12)
         self.cmb_camera_source.setFont(font)
